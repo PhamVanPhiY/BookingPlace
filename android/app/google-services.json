@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "817468766043",
+    "project_id": "bookingplace-31e57",
+    "storage_bucket": "bookingplace-31e57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817468766043:android:89c3722bb9f07616f54c7e",
+        "android_client_info": {
+          "package_name": "com.example.booking_place"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMJqUZnBzN753KtVhSPi-nDLwQ9SZYHkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
