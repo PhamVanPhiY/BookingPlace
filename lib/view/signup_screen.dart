@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:booking_place/global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -100,6 +103,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           fontSize: 24,
                         ),
                         controller: _passwordTextEditingController,
+                        obscureText: true,
                         validator: (valuePassword) {
                           if (valuePassword!.length < 5) {
                             return "Password must be atleast 6 or more characters. ";
@@ -197,7 +201,17 @@ class _SignupScreenState extends State<SignupScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 38.0),
               child: MaterialButton(
-                onPressed: () {},
+                onPressed: () async {
+                  var imageFile = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (imageFile != null) {
+                    imageFileOfUser = File(imageFile.path);
+
+                    setState(() {
+                      imageFileOfUser;
+                    });
+                  }
+                },
                 child: imageFileOfUser == null
                     ? const Icon(Icons.add_a_photo)
                     : CircleAvatar(
@@ -213,7 +227,30 @@ class _SignupScreenState extends State<SignupScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 44.0, right: 60, left: 60),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (!_formKey.currentState!.validate() ||
+                      imageFileOfUser == null) {
+                    Get.snackbar("Field Misssing",
+                        "Please choose image and fill  out  complete sign up form");
+                    return;
+                  }
+                  if (_emailTextEditingController.text.isEmpty &&
+                      _passwordTextEditingController.text.isEmpty) {
+                    Get.snackbar("Field Misssing",
+                        "Please  fill  out  complete sign up form");
+                    return;
+                  }
+                  userViewModel.signUp(
+                    _emailTextEditingController.text.trim(),
+                    _passwordTextEditingController.text.trim(),
+                    _firstNameTextEditingController.text.trim(),
+                    _lastNameTextEditingController.text.trim(),
+                    _cityTextEditingController.text.trim(),
+                    _countryTextEditingController.text.trim(),
+                    _bioTextEditingController.text.trim(),
+                    imageFileOfUser,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pink,
                 ),
