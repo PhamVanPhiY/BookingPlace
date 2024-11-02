@@ -1,3 +1,4 @@
+import 'package:booking_place/global.dart';
 import 'package:booking_place/view/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 24,
                       ),
                       controller: _passwordTextEditingController,
+                      obscureText: true,
                       validator: (valuePassword) {
                         if (valuePassword!.length < 5) {
                           return "Password must be atleast 6 or more characters. ";
@@ -79,7 +81,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 26.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await userViewModel.login(
+                            _emailTextEditingController.text.trim(),
+                            _passwordTextEditingController.text.trim(),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.pink,
                           padding: const EdgeInsets.symmetric(horizontal: 60)),

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:booking_place/model/app_constants.dart';
+import 'package:booking_place/view/guestSreens/account_screen.dart';
+import 'package:booking_place/view/guest_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,6 +34,7 @@ class UserViewModel {
             .whenComplete(() async {
           await addImageToFirebaseStorage(imageFileOfUser, currentUserID);
         });
+        Get.to(GuestHomeScreen());
         Get.snackbar("Congratulations", "Your account has been created");
       });
     } catch (e) {
@@ -69,4 +72,53 @@ class UserViewModel {
           MemoryImage(imageFileOfUser.readAsBytesSync());
     });
   }
+
+  login(email, password) async {
+    Get.snackbar("Please wait", "checking your credentials ...");
+    try {
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((result) async {
+        String currentUserID = result.user!.uid;
+        AppConstants.currentUser.id = currentUserID;
+        await getUserInfoFromFirestore(currentUserID);
+        await getImageFromStorage(currentUserID);
+        Get.to(GuestHomeScreen());
+        Get.snackbar("Logged-In", "You are logged-in successfully.");
+      });
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    }
+  }
+
+  getUserInfoFromFirestore(userID) async {
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userID).get();
+
+    AppConstants.currentUser.snapshot = snapshot;
+    AppConstants.currentUser.firstName = snapshot["firstName"] ?? "";
+    AppConstants.currentUser.lastName = snapshot["lastName"] ?? "";
+    AppConstants.currentUser.email = snapshot["email"] ?? "";
+    AppConstants.currentUser.bio = snapshot["bio"] ?? "";
+    AppConstants.currentUser.city = snapshot["city"] ?? "";
+    AppConstants.currentUser.city = snapshot["country"] ?? "";
+    AppConstants.currentUser.isHost = snapshot["isHost"] as bool? ?? false;
+  }
+
+  getImageFromStorage(userId) async {
+    if (AppConstants.currentUser.displayImage != null) {
+      return AppConstants.currentUser.displayImage;
+    }
+
+    final imageDataInBytes = await FirebaseStorage.instance
+        .ref()
+        .child("userImages")
+        .child(userId)
+        .child(userId + ".png")
+        .getData(1024 * 1024);
+
+    AppConstants.currentUser.displayImage = MemoryImage(imageDataInBytes!);
+    return AppConstants.currentUser.displayImage;
+  }
 }
+ // 13 : 26s
