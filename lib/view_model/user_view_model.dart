@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:booking_place/model/app_constants.dart';
+import 'package:booking_place/model/user_model.dart';
 import 'package:booking_place/view/guestSreens/account_screen.dart';
 import 'package:booking_place/view/guest_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserViewModel {
+  UserModel userModel = UserModel();
+
   signUp(email, password, firstName, lastName, city, country, bio,
       imageFileOfUser) async {
     Get.snackbar("Please wait", "we are creating account for you");
@@ -119,6 +122,21 @@ class UserViewModel {
 
     AppConstants.currentUser.displayImage = MemoryImage(imageDataInBytes!);
     return AppConstants.currentUser.displayImage;
+  }
+
+  becomeHost(String userID) async {
+    userModel.isHost = true;
+    Map<String, dynamic> dataMap = {
+      "isHost": true,
+    };
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .update(dataMap);
+  }
+
+  modifyCurrentlyHosting(bool isHosting) {
+    userModel.isCurrentlyHosting = isHosting;
   }
 }
  // 13 : 26s
