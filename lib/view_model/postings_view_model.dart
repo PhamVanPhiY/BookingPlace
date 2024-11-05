@@ -11,7 +11,7 @@ class PostingsViewModel {
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
       "amenities": postingModel.amenities,
-      "bathrooms": postingModel.bathroom,
+      "bathrooms": postingModel.bathrooms,
       "description": postingModel.description,
       "beds": postingModel.beds,
       "city": postingModel.city,

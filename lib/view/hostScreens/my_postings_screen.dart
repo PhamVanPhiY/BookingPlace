@@ -1,5 +1,8 @@
+import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/view/hostScreens/create_posting_screen.dart';
-import 'package:booking_place/view/widgets/posting_list_tile.dart';
+import 'package:booking_place/view/widgets/posting_list_tile_button.dart';
+
+import 'package:booking_place/view/widgets/posting_list_tile_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,22 +18,34 @@ class _MyPostingsScreenState extends State<MyPostingsScreen> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(29, 0, 26, 26),
-        child: InkResponse(
-          onTap: () {
-            Get.to(CreatePostingScreen());
-          },
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-              color: Colors.grey,
-              width: 1.2,
-            )),
-            child: PostingListTile(),
-          ),
-        ),
-      ),
+      child: ListView.builder(
+          itemCount: AppConstants.currentUser.myPostings!.length + 1,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(29, 0, 26, 26),
+              child: InkResponse(
+                onTap: () {
+                  Get.to(CreatePostingScreen(
+                    posting:
+                        (index == AppConstants.currentUser.myPostings!.length)
+                            ? null
+                            : AppConstants.currentUser.myPostings![index],
+                  ));
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.grey,
+                    width: 1.2,
+                  )),
+                  child: (index == AppConstants.currentUser.myPostings!.length)
+                      ? PostingListTileButton()
+                      : PostingListTileUi(
+                          posting: AppConstants.currentUser.myPostings![index]),
+                ),
+              ),
+            );
+          }),
     );
   }
 }

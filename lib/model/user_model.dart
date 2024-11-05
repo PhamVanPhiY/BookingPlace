@@ -57,15 +57,27 @@ class UserModel extends ContactModel {
 
     await FirebaseFirestore.instance.collection("users").doc(id).set(dataMap);
   }
+
   addPostingToMyPostings(PostingModel posting) async {
     myPostings!.add(posting);
     List<String> myPostingIDsList = [];
-    myPostings!.forEach((element){
+    myPostings!.forEach((element) {
       myPostingIDsList.add(element.id!);
-    }
-    );
-    await FirebaseFirestore.instance.collection("users").doc(id).update({
-      'myPostingIDs' : myPostingIDsList,
     });
+    await FirebaseFirestore.instance.collection("users").doc(id).update({
+      'myPostingIDs': myPostingIDsList,
+    });
+  }
+
+  getMyPostingsFromFirestore() async {
+    List<String> myPostingIDs =
+        List<String>.from(snapshot!["myPostingIDs"]) ?? [];
+
+    for (String postingID in myPostingIDs) {
+      PostingModel posting = PostingModel(id: postingID);
+      await posting.getPostingInfoFromFirestore();
+      await posting.getAllImagesFromStorage();
+      myPostings!.add(posting);
+    }
   }
 }

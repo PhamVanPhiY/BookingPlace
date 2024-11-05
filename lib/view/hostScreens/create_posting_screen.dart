@@ -11,7 +11,11 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreatePostingScreen extends StatefulWidget {
-  const CreatePostingScreen({super.key});
+  PostingModel? posting;
+  CreatePostingScreen({
+    super.key,
+    this.posting,
+  });
 
   @override
   State<CreatePostingScreen> createState() => _CreatePostingScreenState();
@@ -124,7 +128,8 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
               }
 
               postingModel.name = _nameTextEditingController.text;
-              postingModel.price = double.parse(_priceTextEditingController.text);
+              postingModel.price =
+                  double.parse(_priceTextEditingController.text);
               postingModel.description = _descriptionTextEditingController.text;
               postingModel.address = _addressTextEditingController.text;
               postingModel.city = _cityTextEditingController.text;
@@ -133,10 +138,11 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                   _amenitiesTextEditingController.text.split(",");
               postingModel.type = residenceTypeSelected;
               postingModel.beds = _beds;
-              postingModel.bathroom = _bathrooms;
+              postingModel.bathrooms = _bathrooms;
               postingModel.displayImage = _imageList;
 
-              postingModel.host = AppConstants.currentUser.createUserFromContact();
+              postingModel.host =
+                  AppConstants.currentUser.createUserFromContact();
               postingModel.setImageNames();
 
               //if this is new a post or old post
