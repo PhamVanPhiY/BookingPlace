@@ -1,4 +1,7 @@
+import 'package:booking_place/model/booking_model.dart';
 import 'package:booking_place/model/contact_model.dart';
+import 'package:booking_place/model/posting_model.dart';
+import 'package:booking_place/model/review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +14,11 @@ class UserModel extends ContactModel {
   bool? isHost;
   bool? isCurrentlyHosting;
   DocumentSnapshot? snapshot;
+
+  List<BookingModel>? bookings;
+  List<ReviewModel>? reviews;
+
+  List<PostingModel>? myPostings;
 
   UserModel({
     String id = "",
@@ -28,6 +36,9 @@ class UserModel extends ContactModel {
             displayImage: displayImage) {
     isHost = false;
     isCurrentlyHosting = false;
+    bookings = [];
+    reviews = [];
+    myPostings = [];
   }
 
   Future<void> saveUserToFirestore() async {
@@ -45,5 +56,16 @@ class UserModel extends ContactModel {
     };
 
     await FirebaseFirestore.instance.collection("users").doc(id).set(dataMap);
+  }
+  addPostingToMyPostings(PostingModel posting) async {
+    myPostings!.add(posting);
+    List<String> myPostingIDsList = [];
+    myPostings!.forEach((element){
+      myPostingIDsList.add(element.id!);
+    }
+    );
+    await FirebaseFirestore.instance.collection("users").doc(id).update({
+      'myPostingIDs' : myPostingIDsList,
+    });
   }
 }
