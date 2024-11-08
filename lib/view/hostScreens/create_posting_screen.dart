@@ -204,7 +204,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
 
               postingModel = PostingModel();
 
-              Get.to(GuestHomeScreen());
+              Get.to(HostHomeScreen ());
             },
             icon: const Icon(Icons.upload),
           )

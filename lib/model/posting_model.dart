@@ -89,18 +89,45 @@ class PostingModel {
           .child(id!)
           .child(imageNames![i])
           .getData(1024 * 1024);
-          displayImage!.add(MemoryImage(imageData!));
+      displayImage!.add(MemoryImage(imageData!));
     }
-  return displayImage;
+    return displayImage;
   }
 
-  getAmenitiesString(){
-    if(amenities!.isEmpty){
+  getFirstImageFromStorage() async {
+    if (displayImage!.isNotEmpty) {
+      return displayImage!.first;
+    }
+    final imageData = await FirebaseStorage.instance
+        .ref()
+        .child("postingImages")
+        .child(id!)
+        .child(imageNames!.first)
+        .getData(1024 * 1024);
+    displayImage!.add(MemoryImage(imageData!));
+    return displayImage!.first;
+  }
+
+  getAmenitiesString() {
+    if (amenities!.isEmpty) {
       return "";
     }
-    
+
     String amenitiesString = amenities.toString();
 
-    return amenitiesString.substring(1,amenitiesString.length-1);
+    return amenitiesString.substring(1, amenitiesString.length - 1);
+  }
+
+  double getCurrentRating() {
+    if (reviews!.length == 0) {
+      return 4;
+    }
+    double rating = 0;
+
+    reviews!.forEach((review) {
+      rating = rating + review.rating!;
+    });
+    rating /= reviews!.length;
+    return rating;
   }
 }

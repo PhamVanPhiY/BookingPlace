@@ -19,6 +19,7 @@ dependencies:
   firebase_storage: ^11.0.16
   cloud_firestore:
   image_picker:
+  custom_rating_bar:
 
 dev_dependencies:
   flutter_test:
