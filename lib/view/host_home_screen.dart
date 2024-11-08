@@ -8,7 +8,8 @@ import 'package:booking_place/view/hostScreens/my_postings_screen.dart';
 import 'package:flutter/material.dart';
 
 class HostHomeScreen extends StatefulWidget {
-  const HostHomeScreen({super.key});
+  int? index;
+  HostHomeScreen({super.key, this.index});
 
   @override
   State<HostHomeScreen> createState() => _HostHomeScreenState();
@@ -43,6 +44,12 @@ class _HostHomeScreenState extends State<HostHomeScreen> {
     );
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedIndex= widget.index ?? 3;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

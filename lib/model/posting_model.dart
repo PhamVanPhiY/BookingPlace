@@ -93,4 +93,14 @@ class PostingModel {
     }
   return displayImage;
   }
+
+  getAmenitiesString(){
+    if(amenities!.isEmpty){
+      return "";
+    }
+    
+    String amenitiesString = amenities.toString();
+
+    return amenitiesString.substring(1,amenitiesString.length-1);
+  }
 }

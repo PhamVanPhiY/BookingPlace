@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class PostingsViewModel {
   addListingInfoToFirestore() async {
-    
     postingModel.setImageNames();
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
@@ -20,7 +19,7 @@ class PostingsViewModel {
       "imageNames": postingModel.imageNames,
       "name": postingModel.name,
       "price": postingModel.price,
-      "rating": postingModel.rating,
+      "rating": 3.5,
       "type": postingModel.type,
     };
 
@@ -31,8 +30,31 @@ class PostingsViewModel {
     await AppConstants.currentUser.addPostingToMyPostings(postingModel);
   }
 
+  updateListingInfoToFirestore() async {
+    postingModel.setImageNames();
+    Map<String, dynamic> dataMap = {
+      "address": postingModel.address,
+      "amenities": postingModel.amenities,
+      "bathrooms": postingModel.bathrooms,
+      "description": postingModel.description,
+      "beds": postingModel.beds,
+      "city": postingModel.city,
+      "country": postingModel.country,
+      "hostID": AppConstants.currentUser.id,
+      "imageNames": postingModel.imageNames,
+      "name": postingModel.name,
+      "price": postingModel.price,
+      "rating": 3.5,
+      "type": postingModel.type,
+    };
+
+    FirebaseFirestore.instance
+        .collection("postings")
+        .doc(postingModel.id)
+        .update(dataMap);
+  }
+
   addImageToFirebaseStorage() async {
- 
     for (int i = 0; i < postingModel.displayImage!.length; i++) {
       Reference ref = FirebaseStorage.instance
           .ref()
@@ -40,9 +62,9 @@ class PostingsViewModel {
           .child(postingModel.id!)
           .child(postingModel.imageNames![i]);
 
-      await ref.putData(postingModel.displayImage![i].bytes).whenComplete((){
-
-      });
+      await ref
+          .putData(postingModel.displayImage![i].bytes)
+          .whenComplete(() {});
     }
   }
 }
