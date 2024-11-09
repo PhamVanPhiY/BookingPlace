@@ -1,7 +1,9 @@
 import 'package:booking_place/model/posting_model.dart';
+import 'package:booking_place/view/view_posting_screen.dart';
 import 'package:booking_place/view/widgets/posting_grid_tile_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -124,29 +126,33 @@ class _ExploreScreenState extends State<ExploreScreen> {
               builder: (context, datasnapshots) {
                 if (datasnapshots.hasData) {
                   return GridView.builder(
-                    physics: const ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: datasnapshots.data.docs.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 15,
-                            childAspectRatio: 3 / 4),
-                            itemBuilder: (context,index){
-                                DocumentSnapshot snapshot = datasnapshots.data.docs[index];
-                                PostingModel cPosting = PostingModel(id: snapshot.id);
-                                
-                                cPosting.getPostingInfoFromSnapshot(snapshot);
-                                return InkResponse(
-                                  onTap: (){},
-                                  enableFeedback: true,
-                                  child: PostingGridTileUi(
-                                    posting: cPosting,
-                                  ),
-                                );
-                            }
-                  );
+                      physics: const ScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: datasnapshots.data.docs.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 15,
+                              childAspectRatio: 3 / 4),
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot snapshot =
+                            datasnapshots.data.docs[index];
+                        PostingModel cPosting = PostingModel(id: snapshot.id);
+
+                        cPosting.getPostingInfoFromSnapshot(snapshot);
+                        return InkResponse(
+                          onTap: () {
+                            Get.to(ViewPostingScreen(
+                              posting: cPosting,
+                            ));
+                          },
+                          enableFeedback: true,
+                          child: PostingGridTileUi(
+                            posting: cPosting,
+                          ),
+                        );
+                      });
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(),

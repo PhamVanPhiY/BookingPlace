@@ -25,7 +25,6 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
     super.initState();
 
     posting = widget.posting;
-
     updateUI();
   }
 
