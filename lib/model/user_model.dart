@@ -4,6 +4,7 @@ import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/model/review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class UserModel extends ContactModel {
   String? email;
@@ -18,6 +19,7 @@ class UserModel extends ContactModel {
   List<BookingModel>? bookings;
   List<ReviewModel>? reviews;
 
+  List<PostingModel>? savedPostings;
   List<PostingModel>? myPostings;
 
   UserModel({
@@ -38,6 +40,7 @@ class UserModel extends ContactModel {
     isCurrentlyHosting = false;
     bookings = [];
     reviews = [];
+    savedPostings = [];
     myPostings = [];
   }
 
@@ -79,5 +82,44 @@ class UserModel extends ContactModel {
       await posting.getAllImagesFromStorage();
       myPostings!.add(posting);
     }
+  }
+
+  addSavedPosting(PostingModel posting) async {
+    for (var savedPosting in savedPostings!) {
+      if (savedPosting.id == posting.id) {
+        return;
+      }
+    }
+    savedPostings!.add(posting);
+    List<String> savePostingIDs = [];
+    savedPostings!.forEach((savedPosting) {
+      savePostingIDs.add(savedPosting.id!);
+    });
+
+    await FirebaseFirestore.instance.collection("users").doc(id).update({
+      'savePostingIDs': savePostingIDs,
+    });
+    Get.snackbar("Marked as Favourite", "Saved to your Favourite List");
+  }
+
+  removeSavedPostings(PostingModel posting) async {
+    for(int i = 0;i < savedPostings!.length; i++){
+      if(savedPostings![i].id == posting.id){
+        savedPostings!.removeAt(i);
+        break;
+      }
+    }
+
+       List<String> savePostingIDs = [];
+    savedPostings!.forEach((savedPosting) {
+      savePostingIDs.add(savedPosting.id!);
+    });
+
+    await FirebaseFirestore.instance.collection("users").doc(id).update({
+      'savePostingIDs': savePostingIDs,
+    });
+    Get.snackbar("Listings Removed", "Listings removed from your Favourite List");
+  
+    
   }
 }

@@ -1,3 +1,4 @@
+import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/view/widgets/posting_info_tile_ui.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,9 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
         ),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                AppConstants.currentUser.addSavedPosting(posting!);
+              },
               icon: const Icon(
                 Icons.save,
                 color: Colors.white,
