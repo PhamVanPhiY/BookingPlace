@@ -172,4 +172,26 @@ class PostingModel {
   String getFullAddress() {
     return address! + ", " + city! + ", " + country!;
   }
+
+  getAllBookingsFromFirestore() async {
+    bookings = [];
+    QuerySnapshot snapshots = await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(id)
+        .collection('bookings')
+        .get();
+    for (var snapshot in snapshots.docs) {
+      BookingModel newBooking = BookingModel();
+      await newBooking.getBookingInfoFromFirestoreFromPosting(this, snapshot);
+      bookings!.add(newBooking);
+    }
+  }
+
+  List<DateTime> getAllBookedDates() {
+    List<DateTime> dates = [];
+    bookings!.forEach((booking) {
+      dates.addAll(booking.dates!);
+    });
+    return dates;
+  }
 }
