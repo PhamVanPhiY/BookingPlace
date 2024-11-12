@@ -26,11 +26,19 @@ class BookingModel {
     contact = ContactModel(id: contactID);
   }
 
-  _loadContactInfo(String id, String fullName){
+  _loadContactInfo(String id, String fullName) {
     String firstName = "";
     String lastName = "";
     firstName = fullName.split(" ")[0];
     lastName = fullName.split(" ")[1];
-    contact = ContactModel(id: id,firstName: firstName,lastName: lastName);
+    contact = ContactModel(id: id, firstName: firstName, lastName: lastName);
+  }
+
+  createBooking(
+      PostingModel postingM, ContactModel contactM, List<DateTime> datesM) {
+    posting = postingM;
+    contact = contactM;
+    dates = datesM;
+    datesM.sort();
   }
 }

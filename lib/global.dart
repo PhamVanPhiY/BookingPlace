@@ -5,5 +5,5 @@ import 'package:booking_place/view_model/user_view_model.dart';
 UserViewModel userViewModel = UserViewModel();
 PostingsViewModel postingsViewModel = PostingsViewModel();
 PostingModel postingModel = PostingModel();
-String  paymentResulut = "";
-int? bookingPrice = 0;
+String paymentResulut = "";
+double? bookingPrice = 0.0;

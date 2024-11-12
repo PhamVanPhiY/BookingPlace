@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:booking_place/global.dart';
 import 'package:booking_place/model/posting_model.dart';
+import 'package:booking_place/payment-gateway/payment_config.dart';
 import 'package:booking_place/view/guest_home_screen.dart';
 import 'package:booking_place/view/widgets/calender_ui.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,23 @@ class _BookListingScreenState extends State<BookListingScreen> {
       bookedDates = posting!.getAllBookedDates();
       _buildCalenderWidgets();
     });
+  }
+
+  _makeBooking() {
+    if (selectedDates.isEmpty) {
+      return;
+    }
+    posting!.makeNewBooking(selectedDates, context).whenComplete(() {
+      Get.back();
+    });
+  }
+
+  calculateAmountForOverAllStay() {
+    if (selectedDates.isEmpty) {
+      return;
+    }
+    double totalPriceForAllNigths = selectedDates.length * posting!.price!;
+    bookingPrice = totalPriceForAllNigths;
   }
 
   @override
@@ -113,6 +131,20 @@ class _BookListingScreenState extends State<BookListingScreen> {
                         return calendarWidgets[index];
                       }),
             ),
+            bookingPrice == 0.0
+                ? MaterialButton(
+                    onPressed: () {
+                      calculateAmountForOverAllStay();
+                    },
+                    minWidth: double.infinity,
+                    height: MediaQuery.of(context).size.height / 14,
+                    color: Colors.green,
+                    child: const Text(
+                      'Proceed',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                : Container(),
             paymentResulut != ""
                 ? MaterialButton(
                     onPressed: () {
@@ -130,12 +162,62 @@ class _BookListingScreenState extends State<BookListingScreen> {
                       style: TextStyle(color: Colors.white),
                     ),
                   )
+                : Container(),
+            bookingPrice == 0.0
+                ? Container()
                 : Platform.isIOS
-                    ? ApplePayButton()
-                    : GooglePayButton()
+                    ? ApplePayButton(
+                        paymentConfiguration:
+                            PaymentConfiguration.fromJsonString(
+                                defaultApplePay),
+                        paymentItems: [
+                          PaymentItem(
+                              label: 'Booking Amount',
+                              amount: bookingPrice.toString(),
+                              status: PaymentItemStatus.final_price),
+                        ],
+                        style: ApplePayButtonStyle.black,
+                        width: double.infinity,
+                        height: 50,
+                        type: ApplePayButtonType.buy,
+                        margin: const EdgeInsets.only(top: 15.0),
+                        onPaymentResult: (result) {
+                          print("Payment result = $result");
+                          setState(() {
+                            paymentResulut = result.toString();
+                          });
+                        },
+                        loadingIndicator: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : GooglePayButton(
+                        paymentConfiguration:
+                            PaymentConfiguration.fromJsonString(
+                                defaultGooglePay),
+                        paymentItems: [
+                          PaymentItem(
+                              label: 'Total Amount',
+                              amount: bookingPrice.toString(),
+                              status: PaymentItemStatus.final_price),
+                        ],
+                        type: GooglePayButtonType.pay,
+                        margin: const EdgeInsets.only(top: 15.0),
+                        onPaymentResult: (result) {
+                          print("Payment result = $result");
+                          setState(() {
+                            paymentResulut = result.toString();
+                          });
+                          _makeBooking();
+                        },
+                        loadingIndicator: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
           ],
         ),
       ),
     );
   }
 }
+// 7: 13

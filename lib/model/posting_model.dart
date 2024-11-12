@@ -1,11 +1,14 @@
 import 'dart:ffi';
 
+import 'package:booking_place/global.dart';
+import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/booking_model.dart';
 import 'package:booking_place/model/contact_model.dart';
 import 'package:booking_place/model/review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PostingModel {
   String? id;
@@ -193,5 +196,29 @@ class PostingModel {
       dates.addAll(booking.dates!);
     });
     return dates;
+  }
+
+  Future<void> makeNewBooking(List<DateTime> dates, context) async {
+    Map<String, dynamic> bookingData = {
+      'dates': dates,
+      'name': AppConstants.currentUser.getFullNameOfUser(),
+      'userID': AppConstants.currentUser.id,
+      'payment': bookingPrice,
+    };
+    DocumentReference reference = await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(id)
+        .collection('bookings')
+        .add(bookingData);
+    BookingModel newBooking = BookingModel();
+
+    newBooking.createBooking(
+        this, AppConstants.currentUser.createUserFromContact(), dates);
+    newBooking.id = reference.id;
+
+    bookings!.add(newBooking);
+    await AppConstants.currentUser
+        .addBookingToFirestore(newBooking, bookingPrice!);
+    Get.snackbar("Listing", "Booked successfully");
   }
 }
