@@ -11,7 +11,8 @@ import 'package:pay/pay.dart';
 
 class BookListingScreen extends StatefulWidget {
   PostingModel? posting;
-  BookListingScreen({super.key, this.posting});
+  String? hostID;
+  BookListingScreen({super.key, this.posting,this.hostID});
 
   @override
   State<BookListingScreen> createState() => _BookListingScreenState();
@@ -60,7 +61,7 @@ class _BookListingScreenState extends State<BookListingScreen> {
     if (selectedDates.isEmpty) {
       return;
     }
-    posting!.makeNewBooking(selectedDates, context).whenComplete(() {
+    posting!.makeNewBooking(selectedDates, context,widget.hostID).whenComplete(() {
       Get.back();
     });
   }
@@ -70,7 +71,7 @@ class _BookListingScreenState extends State<BookListingScreen> {
       return;
     }
     double totalPriceForAllNigths = selectedDates.length * posting!.price!;
-    bookingPrice = totalPriceForAllNigths;
+    bookingPrice = totalPriceForAllNigths;   bookingPrice = 10.00;
   }
 
   @override
@@ -145,9 +146,10 @@ class _BookListingScreenState extends State<BookListingScreen> {
                     ),
                   )
                 : Container(),
-            paymentResulut != ""
+            paymentResulut == ""
                 ? MaterialButton(
                     onPressed: () {
+                      _makeBooking();
                       Get.to(GuestHomeScreen());
 
                       setState(() {

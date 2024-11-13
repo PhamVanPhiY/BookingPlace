@@ -123,9 +123,9 @@ class UserModel extends ContactModel {
     
   }
 
-  Future<void> addBookingToFirestore(BookingModel booking,double totalPriceForAllNigths) async {
+  Future<void> addBookingToFirestore(BookingModel booking,double totalPriceForAllNigths,String hostID) async {
     String earningsOld = "";
-    await FirebaseFirestore.instance.collection('users').doc(id).get().then((dataSnap){
+    await FirebaseFirestore.instance.collection('users').doc(hostID).get().then((dataSnap){
       earningsOld = dataSnap["earnings"].toString();
    });
 
@@ -135,9 +135,20 @@ class UserModel extends ContactModel {
    };
 
    await FirebaseFirestore.instance.doc('users/${id}/bookings/${booking.id}').set(data);
-   await FirebaseFirestore.instance.collection("users").doc(id).update(
+   await FirebaseFirestore.instance.collection("users").doc(hostID).update(
     {"earnings" : totalPriceForAllNigths + int.parse(earningsOld),}
    );
    bookings!.add(booking);
   }
+  List<DateTime> getAllBookedDates()
+  {
+    List<DateTime> allBookedDates = [];
+    myPostings!.forEach((posting)
+    {
+      posting.bookings!.forEach((booking){
+          allBookedDates.addAll(booking.dates!);
+    });
+  });
+    return allBookedDates;
+}
 }
