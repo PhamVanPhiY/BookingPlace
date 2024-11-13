@@ -70,7 +70,7 @@ class _BookListingScreenState extends State<BookListingScreen> {
       return;
     }
     double totalPriceForAllNigths = selectedDates.length * posting!.price!;
-    bookingPrice = totalPriceForAllNigths;
+    bookingPrice = totalPriceForAllNigths;   bookingPrice = 10.00;
   }
 
   @override
@@ -145,9 +145,10 @@ class _BookListingScreenState extends State<BookListingScreen> {
                     ),
                   )
                 : Container(),
-            paymentResulut != ""
+            paymentResulut == ""
                 ? MaterialButton(
                     onPressed: () {
+                      _makeBooking();
                       Get.to(GuestHomeScreen());
 
                       setState(() {
