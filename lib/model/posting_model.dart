@@ -198,7 +198,7 @@ class PostingModel {
     return dates;
   }
 
-  Future<void> makeNewBooking(List<DateTime> dates, context) async {
+  Future<void> makeNewBooking(List<DateTime> dates, context,hostID) async {
     Map<String, dynamic> bookingData = {
       'dates': dates,
       'name': AppConstants.currentUser.getFullNameOfUser(),
@@ -218,7 +218,7 @@ class PostingModel {
 
     bookings!.add(newBooking);
     await AppConstants.currentUser
-        .addBookingToFirestore(newBooking, bookingPrice!);
+        .addBookingToFirestore(newBooking, bookingPrice!,hostID);
     Get.snackbar("Listing", "Booked successfully");
   }
 }
