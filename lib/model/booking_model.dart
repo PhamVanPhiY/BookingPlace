@@ -29,8 +29,16 @@ class BookingModel {
   _loadContactInfo(String id, String fullName) {
     String firstName = "";
     String lastName = "";
-    firstName = fullName.split(" ")[0];
-    lastName = fullName.split(" ")[1];
+
+    var nameParts = fullName.split(" ");
+    if (nameParts.length > 1) {
+      firstName = nameParts[0];
+      lastName = nameParts[1];
+    } else {
+      firstName = nameParts[0];
+      lastName = ""; // Hoặc đặt giá trị mặc định khác nếu cần
+    }
+
     contact = ContactModel(id: id, firstName: firstName, lastName: lastName);
   }
 
