@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Timer(const Duration(seconds: 4), () {
       Get.to(LoginScreen());
@@ -26,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-                colors: [Colors.pinkAccent, Colors.amber],
+                colors: [Colors.white, Colors.white],
                 begin: FractionalOffset(0, 0),
                 end: FractionalOffset(1, 0),
                 stops: [0, 1],
@@ -35,16 +34,14 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/images/splash.png"),
-              const Padding(
-                padding: EdgeInsets.only(top: 18),
-                child: Text(
-                  "Welcome to Airbnb Clone",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      color: Colors.white),
+              // Đặt BoxFit.cover để ảnh chiếm toàn bộ màn hình
+              Expanded(
+                child: Image.asset(
+                  "assets/images/logomain.png",
+                  fit: BoxFit
+                      .cover, // Đây là phần quan trọng để ảnh chiếm hết màn hình
+                  width: double.infinity, // Đảm bảo ảnh chiếm hết chiều rộng
+                  height: double.infinity, // Đảm bảo ảnh chiếm hết chiều cao
                 ),
               ),
             ],

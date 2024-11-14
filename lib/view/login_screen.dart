@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
         body: Container(
       decoration: const BoxDecoration(
           gradient: LinearGradient(
-              colors: [Colors.pinkAccent, Colors.amber],
+              colors: [Colors.white, Colors.white],
               begin: FractionalOffset(0, 0),
               end: FractionalOffset(1, 0),
               stops: [0, 1],
@@ -30,16 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: ListView(
         children: [
           Image.asset("assets/images/logo.png"),
-          const Text(
-            "Hi friend ,\n welcome back",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30.0,
-                color: Colors.pink,
-                letterSpacing: 3.0),
-          ),
-          Padding(
+             Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Form(
               key: _formKey,
@@ -90,13 +81,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.pink,
-                          padding: const EdgeInsets.symmetric(horizontal: 60)),
+                        backgroundColor: Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 60, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        shadowColor: Colors.deepPurpleAccent,
+                        elevation: 8,
+                      ),
                       child: const Text(
                         "Login",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16.0,
+                            fontSize: 18.0,
                             color: Colors.white),
                       ),
                     ),
@@ -108,9 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       "Don't have an account? Create here",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ),
                   const SizedBox(
