@@ -5,6 +5,7 @@ import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/user_model.dart';
 import 'package:booking_place/view/guestSreens/account_screen.dart';
 import 'package:booking_place/view/guest_home_screen.dart';
+import 'package:booking_place/view/login_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -241,6 +242,7 @@ class UserViewModel {
 
   // Phương thức đăng nhập người dùng
   login(email, password) async {
+    // Hiển thị snackbar đang kiểm tra thông tin đăng nhập
     Get.snackbar(
       "Please wait",
       "Checking your credentials...",
@@ -254,44 +256,79 @@ class UserViewModel {
     );
 
     try {
-      FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((result) async {
-        String currentUserID = result.user!.uid;
-        AppConstants.currentUser.id = currentUserID;
-        await getUserInfoFromFirestore(currentUserID);
-        await getImageFromStorage(currentUserID);
+      // Đăng nhập trực tiếp với email và mật khẩu
+      final result = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-        await AppConstants.currentUser.getMyPostingsFromFirestore();
+      String currentUserID = result.user!.uid;
+      AppConstants.currentUser.id = currentUserID;
+      await getUserInfoFromFirestore(currentUserID);
+      await getImageFromStorage(currentUserID);
+      await AppConstants.currentUser.getMyPostingsFromFirestore();
 
-        // Snackbar thông báo đăng nhập thành công
-        Get.snackbar(
-          "Logged-In",
-          "You are logged-in successfully.",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 3),
-          borderRadius: 8,
-          margin: EdgeInsets.all(10),
-          icon: Icon(Icons.check_circle, color: Colors.white),
-        );
-
-        Get.to(GuestHomeScreen());
-      });
-    } catch (e) {
-      // Snackbar thông báo lỗi đăng nhập
+      // Thông báo đăng nhập thành công
       Get.snackbar(
-        "Error",
-        e.toString(),
-        backgroundColor: Colors.red,
+        "Logged-In",
+        "You are logged-in successfully.",
+        backgroundColor: Colors.green,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 3),
         borderRadius: 8,
         margin: EdgeInsets.all(10),
-        icon: Icon(Icons.error, color: Colors.white),
+        icon: Icon(Icons.check_circle, color: Colors.white),
       );
+
+      // Chuyển hướng đến trang chính
+      Get.to(GuestHomeScreen());
+    } catch (e) {
+      // Xử lý lỗi FirebaseAuthException
+      if (e is FirebaseAuthException) {
+        print("Error code: ${e.code}"); // In ra mã lỗi để kiểm tra
+
+        if (e.code == 'user-not-found') {
+          // Nếu email không tồn tại trong Firebase
+          Get.snackbar(
+            "Email Not Found",
+            "The email you entered is not registered. Please try again.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 3),
+            borderRadius: 8,
+            margin: EdgeInsets.all(10),
+            icon: Icon(Icons.error, color: Colors.white),
+          );
+        } else if (e.code == 'wrong-password') {
+          // Nếu mật khẩu không đúng
+          Get.snackbar(
+            "Incorrect Password",
+            "The password you entered is incorrect. Please try again.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 3),
+            borderRadius: 8,
+            margin: EdgeInsets.all(10),
+            icon: Icon(Icons.error, color: Colors.white),
+          );
+        } else {
+          // Nếu có lỗi khác
+          Get.snackbar(
+            "Error",
+            e.message ?? "An unknown error occurred. Please try again.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 3),
+            borderRadius: 8,
+            margin: EdgeInsets.all(10),
+            icon: Icon(Icons.error, color: Colors.white),
+          );
+        }
+      }
     }
   }
 
@@ -342,5 +379,42 @@ class UserViewModel {
   // Cập nhật trạng thái Hosting
   modifyCurrentlyHosting(bool isHosting) {
     userModel.isCurrentlyHosting = isHosting;
+  }
+
+  logout() async {
+    try {
+      // Thực hiện đăng xuất
+      await FirebaseAuth.instance.signOut();
+
+      // Hiển thị snackbar thông báo đã đăng xuất thành công
+      Get.snackbar(
+        "Logged Out",
+        "You have successfully logged out.",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.exit_to_app, color: Colors.white),
+      );
+
+      // Chuyển hướng đến màn hình đăng nhập
+      Get.offAll(LoginScreen()); // hoặc trang đăng nhập của bạn
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      Get.snackbar(
+        "Error",
+        "An error occurred while logging out. Please try again.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+      print("Logout error: $e"); // In ra lỗi nếu có
+    }
   }
 }

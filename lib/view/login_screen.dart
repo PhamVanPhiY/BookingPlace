@@ -29,8 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
               tileMode: TileMode.clamp)),
       child: ListView(
         children: [
-          Image.asset("assets/images/logo.png"),
-             Padding(
+          Image.asset("assets/images/logologin.jpeg"),
+          Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Form(
               key: _formKey,
