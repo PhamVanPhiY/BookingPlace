@@ -190,4 +190,8 @@ class UserModel extends ContactModel {
     });
   }
 
+createContactFromUser() {
+    return ContactModel(id: id,firstName: firstName,lastName: lastName,displayImage: displayImage,);
+}
+
 }

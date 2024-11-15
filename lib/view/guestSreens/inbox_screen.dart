@@ -1,6 +1,9 @@
+import 'package:booking_place/view/conversation_sceen.dart';
 import 'package:booking_place/view/widgets/conversation_list_tile_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Ensure Firestore is imported
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../../global.dart';
 import '../../model/app_constants.dart';
 import '../../model/conversation_model.dart';
@@ -36,7 +39,7 @@ class _InboxScreenState extends State<InboxScreen> {
 
              return InkResponse(
                onTap: (){
-
+                 Get.to(()=>ConversationSceen(conversation: currentConversation,));
                },
                child: ConversationListTileUI(
                  conversation: currentConversation,
