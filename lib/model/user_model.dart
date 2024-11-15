@@ -1,10 +1,13 @@
 import 'package:booking_place/model/booking_model.dart';
 import 'package:booking_place/model/contact_model.dart';
+import 'package:booking_place/model/conversation_model.dart';
 import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/model/review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'app_constants.dart';
 
 class UserModel extends ContactModel {
   String? email;
@@ -79,6 +82,7 @@ class UserModel extends ContactModel {
     for (String postingID in myPostingIDs) {
       PostingModel posting = PostingModel(id: postingID);
       await posting.getPostingInfoFromFirestore();
+      await posting.getAllBookingsFromFirestore();
       await posting.getAllImagesFromStorage();
       myPostings!.add(posting);
     }
@@ -103,14 +107,14 @@ class UserModel extends ContactModel {
   }
 
   removeSavedPostings(PostingModel posting) async {
-    for(int i = 0;i < savedPostings!.length; i++){
-      if(savedPostings![i].id == posting.id){
+    for (int i = 0; i < savedPostings!.length; i++) {
+      if (savedPostings![i].id == posting.id) {
         savedPostings!.removeAt(i);
         break;
       }
     }
 
-       List<String> savePostingIDs = [];
+    List<String> savePostingIDs = [];
     savedPostings!.forEach((savedPosting) {
       savePostingIDs.add(savedPosting.id!);
     });
@@ -118,37 +122,72 @@ class UserModel extends ContactModel {
     await FirebaseFirestore.instance.collection("users").doc(id).update({
       'savePostingIDs': savePostingIDs,
     });
-    Get.snackbar("Listings Removed", "Listings removed from your Favourite List");
-  
-    
+    Get.snackbar(
+        "Listings Removed", "Listings removed from your Favourite List");
   }
 
-  Future<void> addBookingToFirestore(BookingModel booking,double totalPriceForAllNigths,String hostID) async {
+  Future<void> addBookingToFirestore(BookingModel booking,
+      double totalPriceForAllNigths, String hostID) async {
     String earningsOld = "";
-    await FirebaseFirestore.instance.collection('users').doc(hostID).get().then((dataSnap){
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(hostID)
+        .get()
+        .then((dataSnap) {
       earningsOld = dataSnap["earnings"].toString();
-   });
-
-   Map<String, dynamic> data = {
-    'dates' : booking.dates,
-    'postingID' : booking.posting!.id!,
-   };
-
-   await FirebaseFirestore.instance.doc('users/${id}/bookings/${booking.id}').set(data);
-   await FirebaseFirestore.instance.collection("users").doc(hostID).update(
-    {"earnings" : totalPriceForAllNigths + int.parse(earningsOld),}
-   );
-   bookings!.add(booking);
-  }
-  List<DateTime> getAllBookedDates()
-  {
-    List<DateTime> allBookedDates = [];
-    myPostings!.forEach((posting)
-    {
-      posting.bookings!.forEach((booking){
-          allBookedDates.addAll(booking.dates!);
     });
-  });
+
+    Map<String, dynamic> data = {
+      'dates': booking.dates,
+      'postingID': booking.posting!.id!,
+    };
+
+    await FirebaseFirestore.instance
+        .doc('users/${id}/bookings/${booking.id}')
+        .set(data);
+    await FirebaseFirestore.instance.collection("users").doc(hostID).update({
+      "earnings": totalPriceForAllNigths + double.parse(earningsOld),
+    });
+    bookings!.add(booking);
+    await addBookingConversation(booking);
+  }
+
+  List<DateTime> getAllBookedDates() {
+    List<DateTime> allBookedDates = [];
+    myPostings!.forEach((posting) {
+      posting.bookings!.forEach((booking) {
+        allBookedDates.addAll(booking.dates!);
+      });
+    });
     return allBookedDates;
-}
+  }
+
+  addBookingConversation(BookingModel booking) async {
+    ConversationModel conversation = ConversationModel();
+
+    // Thêm log để kiểm tra quá trình thêm cuộc trò chuyện
+    print("Đang thêm cuộc trò chuyện với host: ${booking.posting!.host!}");
+
+    await conversation.addConversationToFirebase(booking.posting!.host!).then((_) {
+      print("Thêm cuộc trò chuyện thành công");
+    }).catchError((error) {
+      print("Lỗi khi thêm cuộc trò chuyện: $error");
+    });
+
+    String textMessage =
+        "Hi my name is ${AppConstants.currentUser!.firstName} and I have "
+        "just booked ${booking.posting!.name} from ${booking.dates!.first} to "
+        "${booking.dates!.last} if you have any questions contact me. Enjoy your"
+        "stay!";
+
+    // Thêm log để kiểm tra quá trình thêm tin nhắn
+    print("Đang thêm tin nhắn: $textMessage");
+
+    await conversation.addMessageToFirestore(textMessage).then((_) {
+      print("Thêm tin nhắn thành công");
+    }).catchError((error) {
+      print("Lỗi khi thêm tin nhắn: $error");
+    });
+  }
+
 }

@@ -24,9 +24,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
    selectAPosting(PostingModel posting) {
      _selectedPosting = posting;
-    posting.getAllBookingsFromFirestore().whenComplete((){
+    // posting.getAllBookingsFromFirestore().whenComplete((){
       _bookedDated=posting.getAllBookedDates();
-    });
+    // });
     // _selectedPosting = posting;
     // _bookedDated = _selectedPosting!.getAllBookedDates();
     setState(() {});
@@ -71,7 +71,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 15, bottom: 35),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 2.5,
+                  height: MediaQuery.of(context).size.height / 2,
                   child: PageView.builder(
                     itemCount: 12,
                     itemBuilder: (context, index) {
