@@ -168,7 +168,9 @@ class UserModel extends ContactModel {
     // Thêm log để kiểm tra quá trình thêm cuộc trò chuyện
     print("Đang thêm cuộc trò chuyện với host: ${booking.posting!.host!}");
 
-    await conversation.addConversationToFirebase(booking.posting!.host!).then((_) {
+    await conversation
+        .addConversationToFirebase(booking.posting!.host!)
+        .then((_) {
       print("Thêm cuộc trò chuyện thành công");
     }).catchError((error) {
       print("Lỗi khi thêm cuộc trò chuyện: $error");
@@ -190,8 +192,58 @@ class UserModel extends ContactModel {
     });
   }
 
-createContactFromUser() {
-    return ContactModel(id: id,firstName: firstName,lastName: lastName,displayImage: displayImage,);
-}
+  createContactFromUser() {
+    return ContactModel(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      displayImage: displayImage,
+    );
+  }
 
+  Future<void> getAllBookingsFromUser() async {
+    // Tạo danh sách để lưu trữ các posting
+    List<PostingModel> userPostings = [];
+
+    // Truy vấn tất cả các booking của user từ Firestore
+    QuerySnapshot bookingSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id) // ID người dùng
+        .collection('bookings') // Thư mục chứa các booking
+        .get();
+
+    // Lặp qua tất cả các booking để lấy thông tin về posting
+    for (var bookingDoc in bookingSnapshot.docs) {
+      // Lấy thông tin booking
+      BookingModel booking = BookingModel();
+      booking.id = bookingDoc.id;
+      booking.dates = List<DateTime>.from(
+          bookingDoc['dates'].map((e) => (e as Timestamp).toDate()));
+      String postingID = bookingDoc['postingID'];
+
+      // Truy vấn posting từ ID của nó
+      DocumentSnapshot postingSnapshot = await FirebaseFirestore.instance
+          .collection(
+              'postings') // Giả sử postings được lưu trong collection 'postings'
+          .doc(postingID)
+          .get();
+
+      // Lấy thông tin PostingModel từ dữ liệu Firestore
+      PostingModel posting = PostingModel(id: postingSnapshot.id);
+      await posting
+          .getPostingInfoFromFirestore(); // Giả sử bạn có phương thức này để lấy thông tin chi tiết về posting
+
+      // Thêm posting vào danh sách
+      userPostings.add(posting);
+    }
+
+    // Lưu tất cả các posting đã đặt vào biến myPostings của user
+    myPostings = userPostings;
+
+    // Bạn có thể làm gì đó với danh sách này, ví dụ hiển thị nó trên UI.
+    print('All bookings for user ${id}:');
+    for (var posting in userPostings) {
+      print(posting.name); // In ra tên của từng posting
+    }
+  }
 }

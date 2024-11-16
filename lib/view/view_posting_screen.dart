@@ -1,12 +1,15 @@
 import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/posting_model.dart';
+import 'package:booking_place/model/review_model.dart';
 import 'package:booking_place/view/guestSreens/book_listing_screen.dart';
 import 'package:booking_place/view/widgets/posting_info_tile_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:custom_rating_bar/custom_rating_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ViewPostingScreen extends StatefulWidget {
-  PostingModel? posting;
+  final PostingModel? posting;
 
   ViewPostingScreen({super.key, this.posting});
 
@@ -16,17 +19,31 @@ class ViewPostingScreen extends StatefulWidget {
 
 class _ViewPostingScreenState extends State<ViewPostingScreen> {
   PostingModel? posting;
+  List<ReviewModel> reviews = [];
 
   getRequiredInfo() async {
     await posting!.getAllImagesFromStorage();
     await posting!.getHostFromFirestore();
-
+    await getReviews();
     setState(() {});
+  }
+
+  getReviews() async {
+    final reviewCollection = FirebaseFirestore.instance
+        .collection('postings')
+        .doc(posting!.id)
+        .collection('reviews');
+    final reviewSnapshot = await reviewCollection.get();
+
+    setState(() {
+      reviews = reviewSnapshot.docs.map((doc) {
+        return ReviewModel.fromFirestore(doc.data(), posting!.host!);
+      }).toList();
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     posting = widget.posting;
     getRequiredInfo();
@@ -38,15 +55,12 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [
-                    Colors.pinkAccent,
-                    Colors.amber,
-                  ],
-                  begin: FractionalOffset(0.0, 0.0),
-                  end: FractionalOffset(1.0, 0.0),
-                  stops: [0.0, 1.0],
-                  tileMode: TileMode.clamp)),
+            gradient: LinearGradient(
+              colors: [Colors.pinkAccent, Colors.amber],
+              begin: FractionalOffset(0.0, 0.0),
+              end: FractionalOffset(1.0, 0.0),
+            ),
+          ),
         ),
         title: const Text(
           'Posting Information',
@@ -54,19 +68,18 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                AppConstants.currentUser.addSavedPosting(posting!);
-              },
-              icon: const Icon(
-                Icons.save,
-                color: Colors.white,
-              ))
+            onPressed: () {
+              AppConstants.currentUser.addSavedPosting(posting!);
+            },
+            icon: const Icon(Icons.save, color: Colors.white),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // listing images
+            // Images Section
             AspectRatio(
               aspectRatio: 3 / 2,
               child: PageView.builder(
@@ -75,68 +88,65 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                   MemoryImage currentImage = posting!.displayImage![index];
                   return Image(
                     image: currentImage,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                   );
                 },
               ),
             ),
-            //posting name btn // book now btn
-            // description - profile pic
-            //apartments - bed -bath
-            // amenities
-            // the locations
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+
+            // Posting Details
+            Container(
+              margin: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    offset: const Offset(0, 4),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // posting name and book now btn
+                  // Name & Book Now
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 1.55,
+                    children: [
+                      Expanded(
                         child: Text(
                           posting!.name!.toUpperCase(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 18,
                           ),
-                          maxLines: 3,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-
-                      //Book now btn - price
                       Column(
-                        children: <Widget>[
-                          Container(
-                            decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      Colors.pinkAccent,
-                                      Colors.amber,
-                                    ],
-                                    begin: FractionalOffset(0.0, 1.0),
-                                    end: FractionalOffset(0.0, 1.0),
-                                    stops: [0.0, 1.0],
-                                    tileMode: TileMode.clamp)),
-                            child: MaterialButton(
-                              onPressed: () {
-                                Get.to(BookListingScreen(
-                                  posting: posting,hostID:posting!.host!.id!
-                                ));
-                              },
-                              child: const Text(
-                                'Book Now',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(BookListingScreen(
+                                posting: posting,
+                                hostID: posting!.host!.id!,
+                              ));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.amber,
+                              foregroundColor: Colors.white,
                             ),
+                            child: const Text('Book Now'),
                           ),
                           Text(
                             '\$${posting!.price} / night',
                             style: const TextStyle(
                               fontSize: 14.0,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -144,122 +154,200 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                     ],
                   ),
 
-                  // description  - profile pic
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25.0, bottom: 25.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 1.75,
-                          child: Text(
-                            posting!.description!,
-                            textAlign: TextAlign.justify,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                            maxLines: 5,
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: CircleAvatar(
-                                radius:
-                                    MediaQuery.of(context).size.width / 12.5,
-                                backgroundColor: Colors.black,
-                                child: CircleAvatar(
-                                  backgroundImage: posting!.host!.displayImage,
-                                  radius:
-                                      MediaQuery.of(context).size.width / 13,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                posting!.host!.getFullNameOfUser(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
+                  const Divider(thickness: 1, color: Colors.grey),
 
-                  // Apartments - bed - bathroom
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 25.0),
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        PostingInfoTileUi(
-                          iconData: Icons.home,
-                          category: posting!.type!,
-                          categoryInfo: '${posting!.getGuestsNumber()} guests',
+                  // Description & Host Info
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          posting!.description!,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(fontSize: 14),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        PostingInfoTileUi(
-                          iconData: Icons.hotel,
-                          category: 'Beds',
-                          categoryInfo: posting!.getBedroomText(),
-                        ),
-                        PostingInfoTileUi(
-                          iconData: Icons.wc,
-                          category: 'Bathrooms',
-                          categoryInfo: posting!.getBathroomText(),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Amenities
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.0, bottom: 25),
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      childAspectRatio: 3.6,
-                      children:
-                          List.generate(posting!.amenities!.length, (index) {
-                        String currentAmenity = posting!.amenities![index];
-                        return Chip(
-                          label: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Text(
-                              currentAmenity,
-                              style: const TextStyle(
-                                color: Colors.black45,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: posting!.host!.displayImage,
                             ),
                           ),
-                          backgroundColor: Colors.white10,
-                        );
-                      }),
-                    ),
+                          const SizedBox(height: 10),
+                          Text(
+                            posting!.host!.getFullNameOfUser(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  // Location
+                ],
+              ),
+            ),
+
+            // Amenities
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    offset: const Offset(0, 4),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   const Text(
-                    'The location :',
+                    'Amenities',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      fontSize: 16,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2.0, bottom: 8),
-                    child: Text(
-                      posting!.getFullAddress(),
-                      style: const TextStyle(
-                        fontSize: 15,
+                  const SizedBox(height: 10),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: List.generate(
+                      posting!.amenities!.length,
+                      (index) => Chip(
+                        label: Text(posting!.amenities![index]),
+                        backgroundColor: Colors.amber.shade50,
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Customer Reviews
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    offset: const Offset(0, 4),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Customer Reviews',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount:
+                        reviews.length, // Lấy danh sách đánh giá từ Firestore
+                    itemBuilder: (context, index) {
+                      final review = reviews[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Lấy ảnh từ Firebase Storage thông qua getReviewerImage()
+                                FutureBuilder<MemoryImage?>(
+                                  future: review.getReviewerImage(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.grey,
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return const CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.grey,
+                                      );
+                                    } else if (snapshot.hasData) {
+                                      return CircleAvatar(
+                                        radius: 25,
+                                        backgroundImage: snapshot.data,
+                                      );
+                                    } else {
+                                      return const CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.grey,
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Hiển thị tên người đánh giá
+                                      Text(
+                                        review.reviewerName ?? 'Anonymous',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      RatingBar.readOnly(
+                                        size: 20.0,
+                                        initialRating: review.rating ?? 0.0,
+                                        maxRating: 5,
+                                        filledIcon: Icons.star,
+                                        emptyIcon: Icons.star_border,
+                                        filledColor: Colors.amber,
+                                      ),
+                                      const SizedBox(height: 5),
+                                      // Hiển thị nội dung đánh giá
+                                      Text(
+                                        review.text ?? 'No comments',
+                                        style: const TextStyle(fontSize: 13),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

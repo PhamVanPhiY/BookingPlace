@@ -1,5 +1,3 @@
-
-
 import 'package:booking_place/global.dart';
 import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/booking_model.dart';
@@ -97,9 +95,10 @@ class PostingModel {
     return displayImage;
   }
 
-  getFirstImageFromStorage() async {
+  Future<MemoryImage?> getFirstImageFromStorage() async {
     if (displayImage!.isNotEmpty) {
-      return displayImage!.first;
+      return displayImage!
+          .first; // Trả về MemoryImage nếu danh sách đã có hình ảnh
     }
     final imageData = await FirebaseStorage.instance
         .ref()
@@ -107,8 +106,14 @@ class PostingModel {
         .child(id!)
         .child(imageNames!.first)
         .getData(1024 * 1024);
-    displayImage!.add(MemoryImage(imageData!));
-    return displayImage!.first;
+
+    // Đảm bảo trả về đúng kiểu MemoryImage
+    if (imageData != null) {
+      displayImage!.add(MemoryImage(imageData));
+      return displayImage!.first;
+    } else {
+      return null;
+    }
   }
 
   getAmenitiesString() {
@@ -198,7 +203,7 @@ class PostingModel {
     return dates;
   }
 
-  Future<void> makeNewBooking(List<DateTime> dates, context,hostID) async {
+  Future<void> makeNewBooking(List<DateTime> dates, context, hostID) async {
     Map<String, dynamic> bookingData = {
       'dates': dates,
       'name': AppConstants.currentUser.getFullNameOfUser(),
@@ -218,7 +223,7 @@ class PostingModel {
 
     bookings!.add(newBooking);
     await AppConstants.currentUser
-        .addBookingToFirestore(newBooking, bookingPrice!,hostID);
+        .addBookingToFirestore(newBooking, bookingPrice!, hostID);
     Get.snackbar("Listing", "Booked successfully");
   }
 }
