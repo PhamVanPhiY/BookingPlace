@@ -15,6 +15,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   String _hostingTitle = 'Show my Host Dashboard';
+
   modifyHostingMode() async {
     if (AppConstants.currentUser.isHost!) {
       if (AppConstants.currentUser.isCurrentlyHosting!) {
@@ -33,7 +34,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (AppConstants.currentUser.isHost!) {
       if (AppConstants.currentUser.isCurrentlyHosting!) {
@@ -48,178 +48,134 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(25, 50, 20, 0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //user info
-
-            Padding(
-              padding: const EdgeInsets.only(bottom: 30.0),
-              child: Center(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // User info section
+              Center(
                 child: Column(
                   children: [
                     MaterialButton(
                       onPressed: () {},
                       child: CircleAvatar(
-                        backgroundColor: Colors.black,
-                        radius: MediaQuery.of(context).size.width / 4.5,
+                        backgroundColor: Colors.grey[300],
+                        radius: 70,
                         child: CircleAvatar(
                           backgroundImage:
                               AppConstants.currentUser.displayImage,
-                          radius: MediaQuery.of(context).size.width / 4.6,
+                          radius: 68,
                         ),
                       ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
-                    // name and email
+                    // Name and email
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           AppConstants.currentUser.getFullNameOfUser(),
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 24,
+                            color: Colors.black87,
                           ),
                         ),
+                        const SizedBox(height: 5),
                         Text(
                           AppConstants.currentUser.email.toString(),
-                          style: const TextStyle(
-                            fontSize: 15,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
                           ),
-                        )
+                        ),
                       ],
-                    )
+                    ),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
-            ),
-            ListView(
-              shrinkWrap: true,
 
-              //buttons
-              children: [
-                // Personal Information button
-                Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.pinkAccent,
-                      Colors.amber,
-                    ],
-                    begin: FractionalOffset(0.0, 0.0),
-                    end: FractionalOffset(1.0, 0.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp,
-                  )),
-                  child: MaterialButton(
-                    height: MediaQuery.of(context).size.height / 9.0,
-                    onPressed: () {},
-                    child: const ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
-                      leading: Text(
-                        "Personal Information",
-                        style: TextStyle(
-                          fontSize: 18.5,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      trailing: Icon(
-                        size: 34,
-                        Icons.person_2,
-                      ),
-                    ),
+              // Buttons List
+              Column(
+                children: [
+                  _buildListTile(
+                    title: "Personal Information",
+                    icon: Icons.person_2,
+                    onTap: () {},
                   ),
-                ),
-
-                const SizedBox(
-                  height: 10,
-                ),
-                // Change hosting button
-                Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.pinkAccent,
-                      Colors.amber,
-                    ],
-                    begin: FractionalOffset(0.0, 0.0),
-                    end: FractionalOffset(1.0, 0.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp,
-                  )),
-                  child: MaterialButton(
-                    height: MediaQuery.of(context).size.height / 9.0,
-                    onPressed: () {
+                  _buildListTile(
+                    title: _hostingTitle,
+                    icon: Icons.hotel_outlined,
+                    onTap: () {
                       modifyHostingMode();
                       setState(() {});
                     },
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
-                      leading: Text(
-                        _hostingTitle,
-                        style: const TextStyle(
-                          fontSize: 18.5,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      trailing: const Icon(
-                        size: 34,
-                        Icons.hotel_outlined,
-                      ),
-                    ),
                   ),
-                ),
-
-                const SizedBox(
-                  height: 10,
-                ),
-                // Logout button
-                Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.pinkAccent,
-                      Colors.amber,
-                    ],
-                    begin: FractionalOffset(0.0, 0.0),
-                    end: FractionalOffset(1.0, 0.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp,
-                  )),
-                  child: MaterialButton(
-                    height: MediaQuery.of(context).size.height / 9.0,
-                    onPressed: () {
+                  _buildListTile(
+                    title: "Log Out",
+                    icon: Icons.logout_outlined,
+                    onTap: () {
                       userViewModel.logout();
                     },
-                    child: const ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
-                      leading: Text(
-                        "Log Out",
-                        style: TextStyle(
-                          fontSize: 18.5,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      trailing: Icon(
-                        size: 34,
-                        Icons.logout_outlined,
-                      ),
-                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Custom widget for list tiles with better design
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+        color: Colors.white,
+      ),
+      child: MaterialButton(
+        onPressed: onTap,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        child: ListTile(
+          contentPadding: EdgeInsets.all(0.0),
+          leading: Icon(
+            icon,
+            color: Colors.deepPurpleAccent,
+            size: 30,
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 18.5,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
             ),
-          ],
+          ),
+          trailing: const Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.deepPurpleAccent,
+            size: 20,
+          ),
         ),
       ),
     );

@@ -50,7 +50,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.pinkAccent, Colors.amber],
+                  colors: [Color.fromARGB(26, 220, 133, 133), Color.fromARGB(255, 241, 100, 100)],
                   begin: FractionalOffset(0, 0),
                   end: FractionalOffset(1, 0),
                   stops: [0, 1],
@@ -59,8 +59,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
         title: Text(
           screenTitles[selectedIndex],
           style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
+            fontSize: 22,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
         ),
         automaticallyImplyLeading: false,

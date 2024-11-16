@@ -281,30 +281,35 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Lấy ảnh từ Firebase Storage thông qua getReviewerImage()
+                                // Thay đổi để lấy ảnh của người đánh giá
                                 FutureBuilder<MemoryImage?>(
-                                  future: review.getReviewerImage(),
+                                  future: review
+                                      .getReviewerImage(), // Lấy ảnh của người đánh giá
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return const CircleAvatar(
                                         radius: 25,
-                                        backgroundColor: Colors.grey,
+                                        backgroundColor: Colors
+                                            .grey, // Màu nền khi đang tải ảnh
                                       );
                                     } else if (snapshot.hasError) {
                                       return const CircleAvatar(
                                         radius: 25,
-                                        backgroundColor: Colors.grey,
+                                        backgroundColor:
+                                            Colors.grey, // Màu nền nếu có lỗi
                                       );
                                     } else if (snapshot.hasData) {
                                       return CircleAvatar(
                                         radius: 25,
-                                        backgroundImage: snapshot.data,
+                                        backgroundImage: snapshot
+                                            .data, // Hiển thị ảnh người đánh giá
                                       );
                                     } else {
                                       return const CircleAvatar(
                                         radius: 25,
-                                        backgroundColor: Colors.grey,
+                                        backgroundColor: Colors
+                                            .grey, // Màu nền nếu không có ảnh
                                       );
                                     }
                                   },

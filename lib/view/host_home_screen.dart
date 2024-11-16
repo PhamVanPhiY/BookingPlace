@@ -48,8 +48,9 @@ class _HostHomeScreenState extends State<HostHomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    selectedIndex= widget.index ?? 3;
+    selectedIndex = widget.index ?? 3;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +58,10 @@ class _HostHomeScreenState extends State<HostHomeScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.pinkAccent, Colors.amber],
+                  colors: [
+                    Color.fromARGB(26, 220, 133, 133),
+                    Color.fromARGB(255, 241, 100, 100)
+                  ],
                   begin: FractionalOffset(0, 0),
                   end: FractionalOffset(1, 0),
                   stops: [0, 1],
@@ -66,9 +70,7 @@ class _HostHomeScreenState extends State<HostHomeScreen> {
         title: Text(
           screenTitles[selectedIndex],
           style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-          ),
+              fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
         ),
         automaticallyImplyLeading: false,
         centerTitle: true,
