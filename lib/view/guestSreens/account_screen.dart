@@ -2,6 +2,7 @@ import 'package:booking_place/global.dart';
 import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/view/guest_home_screen.dart';
 import 'package:booking_place/view/host_home_screen.dart';
+import 'package:booking_place/view/widgets/edit_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -107,7 +108,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   _buildListTile(
                     title: "Personal Information",
                     icon: Icons.person_2,
-                    onTap: () {},
+                    onTap: () {
+                      // Mở trang chỉnh sửa thông tin người dùng
+                      Get.to(() =>
+                          EditProfileScreen(user: AppConstants.currentUser));
+                    },
                   ),
                   _buildListTile(
                     title: _hostingTitle,

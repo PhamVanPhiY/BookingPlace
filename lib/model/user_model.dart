@@ -4,9 +4,10 @@ import 'package:booking_place/model/conversation_model.dart';
 import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/model/review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import 'app_constants.dart';
 
 class UserModel extends ContactModel {
@@ -47,6 +48,36 @@ class UserModel extends ContactModel {
     myPostings = [];
   }
 
+// Lấy thông tin người dùng từ Firestore
+  Future<void> getUserInfoFromFirestore() async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection("users").doc(id).get();
+
+      // Kiểm tra nếu người dùng tồn tại trong Firestore
+      if (userSnapshot.exists) {
+        // Cập nhật các thông tin cơ bản của người dùng
+        email = userSnapshot["email"];
+        bio = userSnapshot["bio"];
+        city = userSnapshot["city"];
+        country = userSnapshot["country"];
+
+        // Lấy URL ảnh từ Firestore và tải ảnh
+        String? profileImageUrl = userSnapshot["profileImageUrl"];
+        if (profileImageUrl != null) {
+          // Tải ảnh từ URL Firebase Storage và chuyển thành MemoryImage
+          final imageBytes =
+              await NetworkAssetBundle(Uri.parse(profileImageUrl))
+                  .load(profileImageUrl);
+          displayImage = MemoryImage(imageBytes.buffer.asUint8List());
+        }
+      }
+    } catch (e) {
+      print("Error fetching user info: $e");
+    }
+  }
+
+  // Lưu thông tin người dùng vào Firestore
   Future<void> saveUserToFirestore() async {
     Map<String, dynamic> dataMap = {
       "bio": bio,
@@ -64,6 +95,7 @@ class UserModel extends ContactModel {
     await FirebaseFirestore.instance.collection("users").doc(id).set(dataMap);
   }
 
+  // Thêm bài đăng vào danh sách bài đăng của người dùng
   addPostingToMyPostings(PostingModel posting) async {
     myPostings!.add(posting);
     List<String> myPostingIDsList = [];
@@ -75,6 +107,31 @@ class UserModel extends ContactModel {
     });
   }
 
+  // Phương thức này sẽ tải ảnh lên Firebase Storage và cập nhật thông tin người dùng trong Firestore
+  // Phương thức tải ảnh mới lên Firebase Storage và cập nhật Firestore
+  Future<void> updateProfileImage(MemoryImage newImage) async {
+    try {
+      // Tải ảnh lên Firebase Storage
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/${id}.jpg');
+      final uploadTask = storageRef.putData(newImage.bytes);
+      final snapshot = await uploadTask.whenComplete(() => null);
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Cập nhật URL của ảnh trong Firestore
+      await FirebaseFirestore.instance.collection('users').doc(id).update({
+        'profileImageUrl': downloadUrl,
+      });
+
+      // Cập nhật ảnh đại diện trong UserModel
+      displayImage = newImage;
+    } catch (e) {
+      print("Error uploading image: $e");
+      throw e;
+    }
+  }
+
+  // Lấy tất cả bài đăng của người dùng từ Firestore
   getMyPostingsFromFirestore() async {
     List<String> myPostingIDs =
         List<String>.from(snapshot!["myPostingIDs"]) ?? [];
@@ -88,6 +145,7 @@ class UserModel extends ContactModel {
     }
   }
 
+  // Thêm bài đăng vào danh sách yêu thích của người dùng
   addSavedPosting(PostingModel posting) async {
     for (var savedPosting in savedPostings!) {
       if (savedPosting.id == posting.id) {
@@ -106,6 +164,7 @@ class UserModel extends ContactModel {
     Get.snackbar("Marked as Favourite", "Saved to your Favourite List");
   }
 
+  // Xóa bài đăng khỏi danh sách yêu thích của người dùng
   removeSavedPostings(PostingModel posting) async {
     for (int i = 0; i < savedPostings!.length; i++) {
       if (savedPostings![i].id == posting.id) {
@@ -126,6 +185,7 @@ class UserModel extends ContactModel {
         "Listings Removed", "Listings removed from your Favourite List");
   }
 
+  // Thêm cuộc hẹn vào Firestore
   Future<void> addBookingToFirestore(BookingModel booking,
       double totalPriceForAllNigths, String hostID) async {
     String earningsOld = "";
@@ -152,6 +212,7 @@ class UserModel extends ContactModel {
     await addBookingConversation(booking);
   }
 
+  // Lấy tất cả các ngày đã đặt trong các bài đăng của người dùng
   List<DateTime> getAllBookedDates() {
     List<DateTime> allBookedDates = [];
     myPostings!.forEach((posting) {
@@ -162,6 +223,7 @@ class UserModel extends ContactModel {
     return allBookedDates;
   }
 
+  // Tạo cuộc trò chuyện khi đặt phòng
   addBookingConversation(BookingModel booking) async {
     ConversationModel conversation = ConversationModel();
 
@@ -192,6 +254,7 @@ class UserModel extends ContactModel {
     });
   }
 
+  // Tạo đối tượng ContactModel từ UserModel
   createContactFromUser() {
     return ContactModel(
       id: id,
@@ -201,6 +264,7 @@ class UserModel extends ContactModel {
     );
   }
 
+  // Lấy tất cả các booking của người dùng từ Firestore
   Future<void> getAllBookingsFromUser() async {
     // Tạo danh sách để lưu trữ các posting
     List<PostingModel> userPostings = [];
