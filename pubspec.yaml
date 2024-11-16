@@ -20,6 +20,7 @@ dependencies:
   cloud_firestore:
   image_picker:
   custom_rating_bar:
+  flutter_rating_bar: ^4.0.0
   pay:
   timeago:
 dev_dependencies:

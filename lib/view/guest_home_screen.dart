@@ -50,7 +50,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Color.fromARGB(26, 220, 133, 133), Color.fromARGB(255, 241, 100, 100)],
+                  colors: [
+                    Color.fromARGB(26, 220, 133, 133),
+                    Color.fromARGB(255, 241, 100, 100)
+                  ],
                   begin: FractionalOffset(0, 0),
                   end: FractionalOffset(1, 0),
                   stops: [0, 1],

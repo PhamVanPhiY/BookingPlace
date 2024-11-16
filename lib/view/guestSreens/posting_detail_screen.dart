@@ -120,7 +120,38 @@ class _PostingDetailScreenState extends State<PostingDetailScreen> {
     );
   }
 
-  // Hộp thoại thêm đánh giá
+  // Hàm tính toán rating trung bình và cập nhật giá trị rating cho posting
+  Future<void> _updateAverageRating() async {
+    // Lấy tất cả reviews từ Firestore
+    QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(widget.posting.id)
+        .collection('reviews')
+        .get();
+
+    // Tính tổng số sao và số lượng reviews
+    double totalRating = 0;
+    int reviewCount = reviewsSnapshot.docs.length;
+
+    for (var doc in reviewsSnapshot.docs) {
+      totalRating += doc['rating']; // Lấy rating từ từng review
+    }
+
+    // Tính trung bình
+    double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
+    // Làm tròn rating trung bình về số nguyên gần nhất
+    int roundedRating = averageRating.round();
+
+    // Cập nhật rating trung bình cho posting
+    await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(widget.posting.id)
+        .update({
+      'rating': roundedRating, // Cập nhật giá trị rating đã làm tròn
+    });
+  }
+
   // Hộp thoại thêm đánh giá
   void _showCommentDialog(BuildContext context) {
     TextEditingController commentController = TextEditingController();
@@ -194,13 +225,17 @@ class _PostingDetailScreenState extends State<PostingDetailScreen> {
                       reviewerName: reviewerName, // Lưu tên người đánh giá
                     );
 
-                    // Lưu vào Firestore
+                    // Lưu vào Firestore (reviews collection)
                     await FirebaseFirestore.instance
                         .collection('postings')
                         .doc(widget.posting.id)
                         .collection('reviews')
                         .add(review.toMap());
 
+                    // Tính toán rating trung bình của posting
+                    await _updateAverageRating();
+
+                    // Đóng hộp thoại và hiển thị thông báo
                     Navigator.pop(context);
                     Get.snackbar("Review", "Your review has been submitted!");
                   },
