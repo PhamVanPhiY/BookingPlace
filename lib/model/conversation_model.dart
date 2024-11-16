@@ -84,13 +84,22 @@ class ConversationModel {
     }
 
     // Lấy tên người dùng khác ngoài người hiện tại
+    // for (String name in userNames) {
+    //   if (name != AppConstants.currentUser.getFullNameOfUser()) {
+    //     otherContact!.firstName = name.split(" ")[0] ?? "";
+    //     otherContact!.lastName = name.split(" ")[1] ?? "";
+    //     break;
+    //   }
+    // }
     for (String name in userNames) {
       if (name != AppConstants.currentUser.getFullNameOfUser()) {
-        otherContact!.firstName = name.split(" ")[0] ?? "";
-        otherContact!.lastName = name.split(" ")[1] ?? "";
+        List<String> nameParts = name.split(" ");
+        otherContact!.firstName = nameParts.isNotEmpty ? nameParts[0] : ""; // Lấy từ đầu tiên
+        otherContact!.lastName = nameParts.length > 1 ? nameParts[1] : "";  // Kiểm tra nếu có từ thứ hai
         break;
       }
     }
+
   }
 
 }
