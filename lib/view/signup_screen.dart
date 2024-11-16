@@ -33,7 +33,7 @@ class _SignupScreenState extends State<SignupScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.pinkAccent, Colors.amber],
+                  colors: [Color.fromARGB(255, 115, 244, 68), Colors.greenAccent],
                   begin: FractionalOffset(0, 0),
                   end: FractionalOffset(1, 0),
                   stops: [0, 1],
@@ -49,7 +49,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Container(
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-                colors: [Colors.pinkAccent, Colors.amber],
+                colors: [Colors.white, Colors.white],
                 begin: FractionalOffset(0, 0),
                 end: FractionalOffset(1, 0),
                 stops: [0, 1],
