@@ -82,23 +82,30 @@ class PostingModel {
   }
 
   getAllImagesFromStorage() async {
+    // Tạo một danh sách rỗng để lưu trữ các ảnh lấy được
     displayImage = [];
+
+    // Duyệt qua danh sách tên các ảnh
     for (int i = 0; i < imageNames!.length; i++) {
+      // Lấy dữ liệu ảnh từ Firebase Storage
       final imageData = await FirebaseStorage.instance
           .ref()
           .child("postingImages")
           .child(id!)
           .child(imageNames![i])
-          .getData(1024 * 1024);
+          .getData(1024 * 1024); // Lấy dữ liệu với kích thước tối đa 1MB
+
+      // Thêm ảnh vào danh sách displayImages
       displayImage!.add(MemoryImage(imageData!));
     }
+
+    // Trả về danh sách các ảnh đã lấy được
     return displayImage;
   }
 
-  Future<MemoryImage?> getFirstImageFromStorage() async {
+  getFirstImageFromStorage() async {
     if (displayImage!.isNotEmpty) {
-      return displayImage!
-          .first; // Trả về MemoryImage nếu danh sách đã có hình ảnh
+      return displayImage!.first;
     }
     final imageData = await FirebaseStorage.instance
         .ref()
@@ -106,14 +113,8 @@ class PostingModel {
         .child(id!)
         .child(imageNames!.first)
         .getData(1024 * 1024);
-
-    // Đảm bảo trả về đúng kiểu MemoryImage
-    if (imageData != null) {
-      displayImage!.add(MemoryImage(imageData));
-      return displayImage!.first;
-    } else {
-      return null;
-    }
+    displayImage!.add(MemoryImage(imageData!));
+    return displayImage!.first;
   }
 
   getAmenitiesString() {

@@ -15,6 +15,18 @@ class PostingGridTileUi extends StatefulWidget {
 class _PostingGridTileUiState extends State<PostingGridTileUi> {
   PostingModel? posting;
 
+  updateUI() async {
+    await posting!.getFirstImageFromStorage();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    posting = widget.posting;
+    updateUI();
+  }
+
   // Hàm lấy rating từ Firestore
   Future<double> _getRatingFromFirestore() async {
     if (posting != null) {
@@ -42,12 +54,6 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
       }
     }
     return 0.0;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    posting = widget.posting;
   }
 
   @override
@@ -93,7 +99,8 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
                 AspectRatio(
                   aspectRatio: 3 / 2,
                   child: (posting!.displayImage!.isEmpty)
-                      ? Container() // Nếu không có ảnh thì không hiển thị gì
+                      ? Image.asset(
+                          'assets/images/default_image.png') // Ảnh mặc định nếu không có ảnh
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
@@ -106,6 +113,7 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
                           ),
                         ),
                 ),
+
                 // Thông tin bài đăng
                 Padding(
                   padding: const EdgeInsets.all(8.0),

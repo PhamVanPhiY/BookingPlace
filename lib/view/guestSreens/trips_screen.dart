@@ -42,8 +42,9 @@ class _TripsScreenState extends State<TripsScreen> {
                   return Card(
                     margin: EdgeInsets.all(10),
                     child: ListTile(
-                      leading: FutureBuilder<MemoryImage?>(
-                        future: posting.getFirstImageFromStorage(),
+                      leading: FutureBuilder<dynamic>(
+                        future: posting
+                            .getFirstImageFromStorage(), // Hàm này vẫn giữ nguyên
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -55,9 +56,16 @@ class _TripsScreenState extends State<TripsScreen> {
                             return Icon(Icons
                                 .image_not_supported); // Hiển thị khi không có dữ liệu
                           } else {
-                            return CircleAvatar(
-                              backgroundImage: snapshot.data!,
-                            );
+                            // Kiểm tra và ép kiểu giá trị trả về
+                            var image = snapshot.data;
+                            if (image is MemoryImage) {
+                              return CircleAvatar(
+                                backgroundImage: image,
+                              );
+                            } else {
+                              // Xử lý khi dữ liệu không phải kiểu MemoryImage
+                              return Icon(Icons.image_not_supported);
+                            }
                           }
                         },
                       ),

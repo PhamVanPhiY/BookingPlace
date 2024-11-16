@@ -38,7 +38,6 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
     'Detatched House',
     ' Villa',
     'Apartment',
-    'Condo',
     'Flat',
     'Town house',
     'Studio'
@@ -204,7 +203,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
 
               postingModel = PostingModel();
 
-              Get.to(HostHomeScreen ());
+              Get.to(HostHomeScreen());
             },
             icon: const Icon(Icons.upload),
           )
