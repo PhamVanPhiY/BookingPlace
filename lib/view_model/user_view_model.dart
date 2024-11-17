@@ -80,6 +80,8 @@ class UserViewModel {
   }
 
 // Hàm kiểm tra trạng thái xác thực email
+  // Hàm kiểm tra trạng thái xác thực email
+  // Hàm kiểm tra trạng thái xác thực email
   checkEmailVerificationPeriodically(
       String currentUserID,
       String email,
@@ -169,7 +171,7 @@ class UserViewModel {
               );
 
               // Kiểm tra lại xác thực email sau khi gửi lại liên kết
-              Timer(Duration(seconds: 5), () async {
+              Timer(Duration(seconds: 60), () async {
                 await FirebaseAuth.instance.currentUser!
                     .reload(); // Reload lại thông tin người dùng sau khi gửi lại email
                 if (FirebaseAuth.instance.currentUser!.emailVerified) {

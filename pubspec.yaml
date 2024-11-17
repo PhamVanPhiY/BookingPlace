@@ -23,6 +23,7 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   pay:
   timeago:
+  intl:
 dev_dependencies:
   flutter_test:
     sdk: flutter

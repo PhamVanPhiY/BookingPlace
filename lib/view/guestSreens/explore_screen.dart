@@ -24,7 +24,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   bool isPriceButtonSelected = false;
 
   final List<String> types = [
-    'Detatched House',
+    'Detached House',
     'Villa',
     'Apartment',
     'Flat',
