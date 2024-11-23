@@ -16,42 +16,76 @@ class UserViewModel {
   UserModel userModel = UserModel();
 
   // Phương thức đăng ký người dùng
-  signUp(email, password, firstName, lastName, city, country, bio,
-      imageFileOfUser) async {
+  // signUp(email, password, firstName, lastName, city, country, bio) async {
+  //   try {
+  //     // Thực hiện đăng ký người dùng (tạo tài khoản)
+  //     await FirebaseAuth.instance
+  //         .createUserWithEmailAndPassword(
+  //       email: email,
+  //       password: password,
+  //     )
+  //         .then((result) async {
+  //       String currentUserID = result.user!.uid;
+
+  //       // Gửi liên kết xác thực đến email của người dùng
+  //       await result.user!.sendEmailVerification();
+
+  //       // Hiển thị thông báo gửi email xác nhận
+  //       Get.snackbar(
+  //         "Email Sent",
+  //         "A verification link has been sent to your email. Please check your inbox.",
+  //         backgroundColor: Colors.blue,
+  //         colorText: Colors.white,
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         duration: Duration(seconds: 5), // Tăng thời gian hiển thị snackbar
+  //         borderRadius: 8,
+  //         margin: EdgeInsets.all(10),
+  //         icon: Icon(Icons.mail, color: Colors.white),
+  //       );
+
+  //       // Kiểm tra trạng thái xác thực email định kỳ
+  //       checkEmailVerificationPeriodically(
+  //           currentUserID, email, firstName, lastName, city, country, bio);
+  //     });
+  //   } catch (e) {
+  //     // Kiểm tra lỗi "email already in use"
+  //     if (e.toString().contains('email address is already in use')) {
+  //       Get.snackbar(
+  //         "Email already in use",
+  //         "The email address you entered is already registered. Please use a different one.",
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         duration: Duration(seconds: 3),
+  //         borderRadius: 8,
+  //         margin: EdgeInsets.all(10),
+  //         icon: Icon(Icons.error, color: Colors.white),
+  //       );
+  //     } else {
+  //       Get.snackbar(
+  //         "Error",
+  //         e.toString(),
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         duration: Duration(seconds: 3),
+  //         borderRadius: 8,
+  //         margin: EdgeInsets.all(10),
+  //         icon: Icon(Icons.error, color: Colors.white),
+  //       );
+  //     }
+  //   }
+  // }
+  signUp(email, password, firstName, lastName, city, country, bio) async {
     try {
-      // Thực hiện đăng ký người dùng (tạo tài khoản)
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      )
-          .then((result) async {
-        String currentUserID = result.user!.uid;
+      // Kiểm tra nếu email đã tồn tại trong Firestore
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
 
-        // Gửi liên kết xác thực đến email của người dùng
-        await result.user!.sendEmailVerification();
-
-        // Hiển thị thông báo gửi email xác nhận
-        Get.snackbar(
-          "Email Sent",
-          "A verification link has been sent to your email. Please check your inbox.",
-          backgroundColor: Colors.blue,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(
-              seconds: 5), // Tăng thời gian hiển thị snackbar lên 5 giây
-          borderRadius: 8,
-          margin: EdgeInsets.all(10),
-          icon: Icon(Icons.mail, color: Colors.white),
-        );
-
-        // Kiểm tra trạng thái xác thực email định kỳ
-        checkEmailVerificationPeriodically(currentUserID, email, firstName,
-            lastName, city, country, bio, imageFileOfUser);
-      });
-    } catch (e) {
-      // Kiểm tra lỗi "email already in use"
-      if (e.toString().contains('email address is already in use')) {
+      if (snapshot.docs.isNotEmpty) {
+        // Nếu email đã tồn tại
         Get.snackbar(
           "Email already in use",
           "The email address you entered is already registered. Please use a different one.",
@@ -63,34 +97,73 @@ class UserViewModel {
           margin: EdgeInsets.all(10),
           icon: Icon(Icons.error, color: Colors.white),
         );
-      } else {
-        Get.snackbar(
-          "Error",
-          e.toString(),
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 3),
-          borderRadius: 8,
-          margin: EdgeInsets.all(10),
-          icon: Icon(Icons.error, color: Colors.white),
-        );
+        return;
       }
+
+      // Tạo ID người dùng ngẫu nhiên hoặc sử dụng ID tự sinh
+      String userID = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Dữ liệu người dùng cần lưu vào Firestore
+      Map<String, dynamic> userData = {
+        'email': email,
+        'password': password, // Lưu mật khẩu theo cách an toàn hơn (mã hóa)
+        'firstName': firstName,
+        'lastName': lastName,
+        'city': city,
+        'country': country,
+        'bio': bio,
+        'isHost': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      // Lưu thông tin người dùng vào Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .set(userData);
+
+      // Thông báo đăng ký thành công
+      Get.snackbar(
+        "Registration Successful",
+        "Your account has been created successfully!",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.check_circle, color: Colors.white),
+      );
+
+      // Chuyển hướng đến trang chủ
+      Get.to(GuestHomeScreen());
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.error, color: Colors.white),
+      );
     }
   }
 
 // Hàm kiểm tra trạng thái xác thực email
   // Hàm kiểm tra trạng thái xác thực email
   // Hàm kiểm tra trạng thái xác thực email
-  checkEmailVerificationPeriodically(
+  /* checkEmailVerificationPeriodically(
       String currentUserID,
       String email,
       String firstName,
       String lastName,
       String city,
       String country,
-      String bio,
-      File imageFileOfUser) {
+      String bio) {
     Timer.periodic(Duration(seconds: 10), (timer) async {
       if (FirebaseAuth.instance.currentUser != null) {
         await FirebaseAuth.instance.currentUser!
@@ -110,11 +183,7 @@ class UserViewModel {
 
           // Lưu thông tin người dùng vào Firestore
           await saveUserToFirestore(
-                  bio, city, country, email, firstName, lastName, currentUserID)
-              .whenComplete(() async {
-            // Thêm hình ảnh người dùng vào Firebase Storage
-            await addImageToFirebaseStorage(imageFileOfUser, currentUserID);
-          });
+              bio, city, country, email, firstName, lastName, currentUserID);
 
           // Thông báo tạo tài khoản thành công ngay sau khi xác thực email thành công
           Get.snackbar(
@@ -146,69 +215,11 @@ class UserViewModel {
             margin: EdgeInsets.all(10),
             icon: Icon(Icons.error, color: Colors.white),
           );
-
-          // Cung cấp tùy chọn gửi lại email xác thực
-          Get.defaultDialog(
-            title: "Resend Verification Email",
-            middleText: "Would you like to resend the verification link?",
-            onCancel: () {
-              // Nếu không muốn gửi lại email xác thực
-              timer.cancel();
-            },
-            onConfirm: () async {
-              // Gửi lại liên kết xác thực
-              await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-              Get.snackbar(
-                "Email Sent",
-                "A new verification link has been sent to your email.",
-                backgroundColor: Colors.blue,
-                colorText: Colors.white,
-                snackPosition: SnackPosition.BOTTOM,
-                duration: Duration(seconds: 3),
-                borderRadius: 8,
-                margin: EdgeInsets.all(10),
-                icon: Icon(Icons.mail, color: Colors.white),
-              );
-
-              // Kiểm tra lại xác thực email sau khi gửi lại liên kết
-              Timer(Duration(seconds: 60), () async {
-                await FirebaseAuth.instance.currentUser!
-                    .reload(); // Reload lại thông tin người dùng sau khi gửi lại email
-                if (FirebaseAuth.instance.currentUser!.emailVerified) {
-                  // Nếu email đã được xác thực, có thể cho phép tiếp tục
-                  Get.snackbar(
-                    "Email Verified",
-                    "Your email has been verified. You can now proceed.",
-                    backgroundColor: Colors.green,
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: Duration(seconds: 3),
-                    borderRadius: 8,
-                    margin: EdgeInsets.all(10),
-                    icon: Icon(Icons.check_circle, color: Colors.white),
-                  );
-                  // Tiến hành chuyển hướng hoặc tiếp tục các thao tác
-                } else {
-                  Get.snackbar(
-                    "Email Not Verified",
-                    "The email is still not verified. Please check your inbox.",
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: Duration(seconds: 3),
-                    borderRadius: 8,
-                    margin: EdgeInsets.all(10),
-                    icon: Icon(Icons.error, color: Colors.white),
-                  );
-                }
-              });
-            },
-          );
         }
       }
     });
   }
-
+*/
   // Lưu thông tin người dùng vào Firestore
   Future<void> saveUserToFirestore(
       bio, city, country, email, firstName, lastName, id) async {
@@ -229,7 +240,7 @@ class UserViewModel {
   }
 
   // Thêm hình ảnh của người dùng vào Firebase Storage
-  addImageToFirebaseStorage(File imageFileOfUser, currentUserID) async {
+  /*addImageToFirebaseStorage(File imageFileOfUser, currentUserID) async {
     Reference referenceStorage = FirebaseStorage.instance
         .ref()
         .child("userImages")
@@ -241,9 +252,9 @@ class UserViewModel {
           MemoryImage(imageFileOfUser.readAsBytesSync());
     });
   }
-
+*/
   // Phương thức đăng nhập người dùng
-  login(email, password) async {
+  /* login(email, password) async {
     // Hiển thị snackbar đang kiểm tra thông tin đăng nhập
     Get.snackbar(
       "Please wait",
@@ -316,6 +327,20 @@ class UserViewModel {
             margin: EdgeInsets.all(10),
             icon: Icon(Icons.error, color: Colors.white),
           );
+        } else if (e.code == 'invalid-credential') {
+          // Lỗi invalid-credential
+          print("Invalid credentials detected.");
+          Get.snackbar(
+            "Invalid Credentials",
+            "The credentials you entered are invalid. Please try again.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 3),
+            borderRadius: 8,
+            margin: EdgeInsets.all(10),
+            icon: Icon(Icons.error, color: Colors.white),
+          );
         } else {
           // Nếu có lỗi khác
           Get.snackbar(
@@ -331,6 +356,71 @@ class UserViewModel {
           );
         }
       }
+    }
+  }*/
+  login(email, password) async {
+    try {
+      // Tìm người dùng trong Firestore bằng email và mật khẩu
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .where('password', isEqualTo: password)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        Get.snackbar(
+          "Login Failed",
+          "Invalid email or password. Please try again.",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: Duration(seconds: 3),
+          borderRadius: 8,
+          margin: EdgeInsets.all(10),
+          icon: Icon(Icons.error, color: Colors.white),
+        );
+        return;
+      }
+
+      // Nếu tìm thấy người dùng, lấy thông tin từ Firestore
+      var user = snapshot.docs.first;
+
+      AppConstants.currentUser.id = user.id;
+      AppConstants.currentUser.firstName = user["firstName"];
+      AppConstants.currentUser.lastName = user["lastName"];
+      AppConstants.currentUser.email = user["email"];
+      AppConstants.currentUser.city = user["city"];
+      AppConstants.currentUser.country = user["country"];
+      AppConstants.currentUser.bio = user["bio"];
+      AppConstants.currentUser.isHost = user["isHost"];
+
+      // Thông báo đăng nhập thành công
+      Get.snackbar(
+        "Logged-In",
+        "You are logged-in successfully.",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.check_circle, color: Colors.white),
+      );
+
+      // Chuyển hướng đến trang chính
+      Get.to(GuestHomeScreen());
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "An error occurred. Please try again.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.error, color: Colors.white),
+      );
     }
   }
 
@@ -383,7 +473,7 @@ class UserViewModel {
     userModel.isCurrentlyHosting = isHosting;
   }
 
-  logout() async {
+  /* logout() async {
     try {
       // Thực hiện đăng xuất
       await FirebaseAuth.instance.signOut();
@@ -417,6 +507,40 @@ class UserViewModel {
         icon: Icon(Icons.error, color: Colors.white),
       );
       print("Logout error: $e"); // In ra lỗi nếu có
+    }
+  }*/
+  logout() async {
+    try {
+      // Xóa thông tin đăng nhập khỏi bộ nhớ cục bộ
+      AppConstants.currentUser = UserModel(); // Reset thông tin người dùng
+
+      // Thông báo đã đăng xuất thành công
+      Get.snackbar(
+        "Logged Out",
+        "You have successfully logged out.",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.exit_to_app, color: Colors.white),
+      );
+
+      // Chuyển hướng đến màn hình đăng nhập
+      Get.offAll(LoginScreen());
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "An error occurred while logging out. Please try again.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+        borderRadius: 8,
+        margin: EdgeInsets.all(10),
+        icon: Icon(Icons.error, color: Colors.white),
+      );
     }
   }
 }

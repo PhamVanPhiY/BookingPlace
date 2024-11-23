@@ -33,7 +33,10 @@ class _SignupScreenState extends State<SignupScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Color.fromARGB(255, 115, 244, 68), Colors.greenAccent],
+                  colors: [
+                    Color.fromARGB(255, 115, 244, 68),
+                    Colors.greenAccent
+                  ],
                   begin: FractionalOffset(0, 0),
                   end: FractionalOffset(1, 0),
                   stops: [0, 1],
@@ -198,7 +201,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
             ),
-            Padding(
+            /*  Padding(
               padding: const EdgeInsets.only(top: 38.0),
               child: MaterialButton(
                 onPressed: () async {
@@ -223,23 +226,23 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
               ),
-            ),
+            ),*/
             Padding(
               padding: const EdgeInsets.only(top: 44.0, right: 60, left: 60),
               child: ElevatedButton(
                 onPressed: () {
-                  if (!_formKey.currentState!.validate() ||
+                  /*if (!_formKey.currentState!.validate() ||
                       imageFileOfUser == null) {
                     Get.snackbar("Field Misssing",
                         "Please choose image and fill  out  complete sign up form");
                     return;
-                  }
-                  if (_emailTextEditingController.text.isEmpty &&
-                      _passwordTextEditingController.text.isEmpty) {
-                    Get.snackbar("Field Misssing",
-                        "Please  fill  out  complete sign up form");
-                    return;
-                  }
+                  }*/
+                  // if (_emailTextEditingController.text.isEmpty &&
+                  //     _passwordTextEditingController.text.isEmpty) {
+                  //   Get.snackbar("Field Misssing",
+                  //       "Please  fill  out  complete sign up form");
+                  //   return;
+                  // }
                   userViewModel.signUp(
                     _emailTextEditingController.text.trim(),
                     _passwordTextEditingController.text.trim(),
@@ -248,7 +251,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     _cityTextEditingController.text.trim(),
                     _countryTextEditingController.text.trim(),
                     _bioTextEditingController.text.trim(),
-                    imageFileOfUser,
                   );
                 },
                 style: ElevatedButton.styleFrom(

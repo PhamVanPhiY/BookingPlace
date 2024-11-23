@@ -32,7 +32,7 @@ class ContactModel {
       id: id!,
       firstName: firstName!,
       lastName: lastName!,
-      displayImage: displayImage!,
+      //displayImage: displayImage!,
     );
   }
 

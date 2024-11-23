@@ -1,12 +1,19 @@
+import 'dart:convert'; // Để mã hóa Base64
 import 'package:booking_place/global.dart';
 import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/posting_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 
 class PostingsViewModel {
   addListingInfoToFirestore() async {
     postingModel.setImageNames();
+
+    // Chuyển đổi ảnh sang chuỗi Base64
+    List<String> imageBase64List = postingModel.displayImage!
+        .map((image) => base64Encode(image.bytes))
+        .toList();
+
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
       "amenities": postingModel.amenities,
@@ -17,6 +24,7 @@ class PostingsViewModel {
       "country": postingModel.country,
       "hostID": AppConstants.currentUser.id,
       "imageNames": postingModel.imageNames,
+      "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
       "name": postingModel.name,
       "price": postingModel.price,
       "rating": 3.5,
@@ -32,6 +40,12 @@ class PostingsViewModel {
 
   updateListingInfoToFirestore() async {
     postingModel.setImageNames();
+
+    // Chuyển đổi ảnh sang chuỗi Base64
+    List<String> imageBase64List = postingModel.displayImage!
+        .map((image) => base64Encode(image.bytes))
+        .toList();
+
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
       "amenities": postingModel.amenities,
@@ -41,30 +55,25 @@ class PostingsViewModel {
       "city": postingModel.city,
       "country": postingModel.country,
       "hostID": AppConstants.currentUser.id,
-      "imageNames": postingModel.imageNames,
+      //"imageNames": postingModel.imageNames,
+      "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
       "name": postingModel.name,
       "price": postingModel.price,
       "rating": 3.5,
       "type": postingModel.type,
     };
 
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection("postings")
         .doc(postingModel.id)
         .update(dataMap);
   }
 
-  addImageToFirebaseStorage() async {
-    for (int i = 0; i < postingModel.displayImage!.length; i++) {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child("postingImages")
-          .child(postingModel.id!)
-          .child(postingModel.imageNames![i]);
-
-      await ref
-          .putData(postingModel.displayImage![i].bytes)
-          .whenComplete(() {});
-    }
+  loadImagesFromFirestore(List<String> imageBase64List) {
+    // Chuyển từ Base64 về MemoryImage để hiển thị trong giao diện
+    postingModel.displayImage = imageBase64List
+        .map((base64String) =>
+            MemoryImage(base64Decode(base64String))) // Decode Base64
+        .toList();
   }
 }

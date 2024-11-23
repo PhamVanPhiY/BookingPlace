@@ -173,7 +173,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                 postingModel.bookings = [];
                 postingModel.reviews = [];
                 await postingsViewModel.addListingInfoToFirestore();
-                await postingsViewModel.addImageToFirebaseStorage();
+                //await postingsViewModel.addImageToFirebaseStorage();
 
                 Get.snackbar("New listing",
                     "Your new listing is uploaded successfully.");

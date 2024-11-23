@@ -27,7 +27,9 @@ class _AccountScreenState extends State<AccountScreen> {
         Get.to(HostHomeScreen());
       }
     } else {
-      await userViewModel.becomeHost(FirebaseAuth.instance.currentUser!.uid);
+      // Lấy ID từ AppConstants.currentUser.id thay vì FirebaseAuth
+      String userID = AppConstants.currentUser.id!;
+      await userViewModel.becomeHost(userID);
       AppConstants.currentUser.isCurrentlyHosting = true;
       Get.to(HostHomeScreen());
     }

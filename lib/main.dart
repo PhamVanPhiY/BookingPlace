@@ -1,4 +1,5 @@
 import 'package:booking_place/view/splash_screen.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,11 +8,17 @@ import 'firebase_options.dart'; // Nhập tệp firebase_options.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Khởi tạo Firebase với các thông tin cấu hình từ firebase_options.dart
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions
-        .currentPlatform, // Dùng cấu hình cho nền tảng hiện tại
-  );
+  // Kiểm tra xem Firebase đã được khởi tạo chưa
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Nếu đã khởi tạo, ta bỏ qua bước này
+    print('Firebase has already been initialized: $e');
+  }
+
+  // Khởi tạo Firebase App Check (đảm bảo chỉ được gọi một lần)
 
   runApp(const MyApp());
 }
