@@ -44,7 +44,7 @@ class _TripsScreenState extends State<TripsScreen> {
                     child: ListTile(
                       leading: FutureBuilder<dynamic>(
                         future: posting
-                            .getFirstImageFromStorage(), // Hàm này vẫn giữ nguyên
+                            .getFirstImageFromFirestore(), // Hàm này vẫn giữ nguyên
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {

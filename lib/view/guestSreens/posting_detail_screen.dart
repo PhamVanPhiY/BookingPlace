@@ -35,7 +35,7 @@ class _PostingDetailScreenState extends State<PostingDetailScreen> {
             // Hình ảnh
             FutureBuilder<dynamic>(
               future: widget.posting
-                  .getFirstImageFromStorage(), // Hàm này vẫn giữ nguyên
+                  .getFirstImageFromFirestore(), // Hàm này vẫn giữ nguyên
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());

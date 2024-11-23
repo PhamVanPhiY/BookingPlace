@@ -383,6 +383,7 @@ class UserViewModel {
       }
 
       // Nếu tìm thấy người dùng, lấy thông tin từ Firestore
+
       var user = snapshot.docs.first;
 
       AppConstants.currentUser.id = user.id;
@@ -393,6 +394,7 @@ class UserViewModel {
       AppConstants.currentUser.country = user["country"];
       AppConstants.currentUser.bio = user["bio"];
       AppConstants.currentUser.isHost = user["isHost"];
+      AppConstants.currentUser.linkImageUser = user["linkImageUser"];
 
       // Thông báo đăng nhập thành công
       Get.snackbar(
@@ -437,6 +439,7 @@ class UserViewModel {
     AppConstants.currentUser.city = snapshot["city"] ?? "";
     AppConstants.currentUser.city = snapshot["country"] ?? "";
     AppConstants.currentUser.isHost = snapshot["isHost"] as bool? ?? false;
+    AppConstants.currentUser.linkImageUser = snapshot["linkImageUser"] ?? "";
   }
 
   // Lấy hình ảnh của người dùng từ Firebase Storage

@@ -22,7 +22,7 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
   List<ReviewModel> reviews = [];
 
   getRequiredInfo() async {
-    await posting!.getAllImagesFromStorage();
+    await posting!.getAllImagesFromFirestore();
     await posting!.getHostFromFirestore();
     await getReviews();
     setState(() {});

@@ -19,6 +19,7 @@ class UserModel extends ContactModel {
   bool? isHost;
   bool? isCurrentlyHosting;
   DocumentSnapshot? snapshot;
+  String? linkImageUser;
 
   List<BookingModel>? bookings;
   List<ReviewModel>? reviews;
@@ -31,6 +32,7 @@ class UserModel extends ContactModel {
     String firstName = "",
     String lastName = "",
     MemoryImage? displayImage,
+    this.linkImageUser = "",
     this.email = "",
     this.bio = "",
     this.city = "",
@@ -61,16 +63,17 @@ class UserModel extends ContactModel {
         bio = userSnapshot["bio"];
         city = userSnapshot["city"];
         country = userSnapshot["country"];
+        linkImageUser = userSnapshot["linkImageUser"];
 
         // Lấy URL ảnh từ Firestore và tải ảnh
-        String? profileImageUrl = userSnapshot["profileImageUrl"];
+        /* String? profileImageUrl = userSnapshot["profileImageUrl"];
         if (profileImageUrl != null) {
           // Tải ảnh từ URL Firebase Storage và chuyển thành MemoryImage
           final imageBytes =
               await NetworkAssetBundle(Uri.parse(profileImageUrl))
                   .load(profileImageUrl);
           displayImage = MemoryImage(imageBytes.buffer.asUint8List());
-        }
+        }*/
       }
     } catch (e) {
       print("Error fetching user info: $e");
@@ -140,7 +143,7 @@ class UserModel extends ContactModel {
       PostingModel posting = PostingModel(id: postingID);
       await posting.getPostingInfoFromFirestore();
       await posting.getAllBookingsFromFirestore();
-      await posting.getAllImagesFromStorage();
+      //await posting.getAllImagesFromStorage();
       myPostings!.add(posting);
     }
   }

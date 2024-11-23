@@ -27,7 +27,6 @@ class _AccountScreenState extends State<AccountScreen> {
         Get.to(HostHomeScreen());
       }
     } else {
-      // Lấy ID từ AppConstants.currentUser.id thay vì FirebaseAuth
       String userID = AppConstants.currentUser.id!;
       await userViewModel.becomeHost(userID);
       AppConstants.currentUser.isCurrentlyHosting = true;
@@ -68,15 +67,19 @@ class _AccountScreenState extends State<AccountScreen> {
                         backgroundColor: Colors.grey[300],
                         radius: 70,
                         child: CircleAvatar(
-                          backgroundImage:
-                              AppConstants.currentUser.displayImage,
+                          // Kiểm tra nếu linkUserImage có giá trị không
+                          backgroundImage: AppConstants
+                                      .currentUser.linkImageUser !=
+                                  null
+                              ? NetworkImage(
+                                  AppConstants.currentUser.linkImageUser!)
+                              : AssetImage('assets/images/default_avatar.png'),
+
                           radius: 68,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     // Name and email
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,

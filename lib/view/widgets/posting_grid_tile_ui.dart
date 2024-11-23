@@ -16,7 +16,7 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
   PostingModel? posting;
 
   updateUI() async {
-    await posting!.getFirstImageFromStorage();
+    await posting!.getFirstImageFromFirestore();
     setState(() {});
   }
 

@@ -9,12 +9,14 @@ class ContactModel {
   String? lastName;
   String? fullName;
   MemoryImage? displayImage;
+  String? linkImageUser;
 
   ContactModel({
     this.id = "",
     this.firstName = "",
     this.lastName = "",
     this.displayImage,
+    this.linkImageUser,
   });
 
   // Lấy họ và tên đầy đủ của người dùng
@@ -33,6 +35,7 @@ class ContactModel {
       firstName: firstName!,
       lastName: lastName!,
       //displayImage: displayImage!,
+      linkImageUser: linkImageUser!,
     );
   }
 
@@ -48,6 +51,7 @@ class ContactModel {
         firstName = snapshot['firstName'] ?? "";
         lastName = snapshot['lastName'] ?? "";
         fullName = getFullNameOfUser(); // Tạo tên đầy đủ
+        linkImageUser = snapshot['linkImageUser'] ?? "";
       } else {
         throw Exception('User not found');
       }

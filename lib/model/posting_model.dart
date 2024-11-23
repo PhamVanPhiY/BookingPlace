@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:booking_place/global.dart';
 import 'package:booking_place/model/app_constants.dart';
 import 'package:booking_place/model/booking_model.dart';
@@ -81,7 +84,7 @@ class PostingModel {
     type = snapshot['type'] ?? "";
   }
 
-  getAllImagesFromStorage() async {
+  /*getAllImagesFromStorage() async {
     // Tạo một danh sách rỗng để lưu trữ các ảnh lấy được
     displayImage = [];
 
@@ -98,11 +101,37 @@ class PostingModel {
       // Thêm ảnh vào danh sách displayImages
       displayImage!.add(MemoryImage(imageData!));
     }
+    
 
     // Trả về danh sách các ảnh đã lấy được
     return displayImage;
+  }*/
+  getAllImagesFromFirestore() async {
+    displayImage = []; // Khởi tạo danh sách ảnh
+
+    // Lấy thông tin bài đăng từ Firestore
+    DocumentSnapshot postingSnapshot = await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(id!) // ID của bài đăng
+        .get();
+
+    if (postingSnapshot.exists) {
+      // Lấy danh sách ảnh từ trường "images" (dự đoán là List<dynamic>)
+      List<dynamic> images = postingSnapshot['images'] ?? [];
+
+      for (var image in images) {
+        // Giải mã chuỗi Base64 thành Uint8List nếu chuỗi không rỗng
+        if (image is String && image.isNotEmpty) {
+          Uint8List bytes = base64Decode(image); // Giải mã Base64 thành bytes
+          displayImage!.add(MemoryImage(bytes)); // Thêm ảnh vào danh sách
+        }
+      }
+    }
+
+    return displayImage; // Trả về danh sách ảnh đã giải mã
   }
 
+/*
   getFirstImageFromStorage() async {
     if (displayImage!.isNotEmpty) {
       return displayImage!.first;
@@ -115,6 +144,37 @@ class PostingModel {
         .getData(1024 * 1024);
     displayImage!.add(MemoryImage(imageData!));
     return displayImage!.first;
+  }
+*/
+  getFirstImageFromFirestore() async {
+    if (displayImage!.isNotEmpty) {
+      return displayImage!.first; // Nếu đã có ảnh, trả về ảnh đầu tiên
+    }
+
+    // Lấy thông tin bài đăng từ Firestore
+    DocumentSnapshot postingSnapshot = await FirebaseFirestore.instance
+        .collection('postings')
+        .doc(id!) // ID của bài đăng
+        .get();
+
+    if (postingSnapshot.exists) {
+      // Lấy danh sách ảnh từ trường "images"
+      List<dynamic> images = postingSnapshot['images'] ?? [];
+
+      if (images.isNotEmpty) {
+        String firstImage = images[0]; // Lấy ảnh đầu tiên trong danh sách
+
+        // Giải mã chuỗi Base64 của ảnh
+        if (firstImage.isNotEmpty) {
+          Uint8List bytes =
+              base64Decode(firstImage); // Giải mã Base64 thành bytes
+          displayImage!.add(MemoryImage(bytes)); // Thêm ảnh vào danh sách
+          return displayImage!.first; // Trả về ảnh đầu tiên
+        }
+      }
+    }
+
+    return null; // Nếu không có ảnh, trả về null
   }
 
   getAmenitiesString() {
