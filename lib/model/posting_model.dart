@@ -24,7 +24,7 @@ class PostingModel {
 
   ContactModel? host;
   List<String>? imageNames;
-  List<ImageProvider> displayImage = [];
+  List<String>? displayImage = [];
 
   List<String>? amenities;
 
@@ -53,13 +53,13 @@ class PostingModel {
     bookings = [];
     reviews = [];
   }
-  setImageNames() {
+  /*setImageNames() {
     imageNames = [];
     for (int i = 0; i < displayImage!.length; i++) {
       imageNames!.add("image${i}.png");
     }
   }
-
+*/
   getPostingInfoFromFirestore() async {
     DocumentSnapshot snapshot =
         await FirebaseFirestore.instance.collection('postings').doc(id).get();
@@ -108,7 +108,7 @@ class PostingModel {
     return displayImage;
   }*/
   getAllImagesFromFirestore() async {
-    displayImage = []; // Khởi tạo danh sách ảnh (hoặc danh sách lưu URL)
+    displayImage = []; // Khởi tạo lại danh sách ảnh (URL)
 
     // Lấy thông tin bài đăng từ Firestore
     DocumentSnapshot postingSnapshot = await FirebaseFirestore.instance
@@ -117,20 +117,18 @@ class PostingModel {
         .get();
 
     if (postingSnapshot.exists) {
-      // Lấy danh sách ảnh từ trường "images" (dự đoán là List<String>)
-      List<dynamic> images =
-          postingSnapshot['images'] ?? []; // Lấy danh sách ảnh
+      // Lấy danh sách ảnh từ trường "images"
+      List<dynamic> images = postingSnapshot['images'] ?? [];
 
       for (var image in images) {
-        // Nếu ảnh là URL (chuỗi không rỗng), thêm trực tiếp vào danh sách
+        // Kiểm tra nếu ảnh là URL, và thêm vào danh sách displayImage
         if (image is String && image.isNotEmpty) {
-          displayImage!.add(
-              NetworkImage(image)); // Sử dụng NetworkImage để tải ảnh từ URL
+          displayImage!.add(image); // Thêm URL vào displayImage
         }
       }
     }
 
-    return displayImage; // Trả về danh sách ảnh (hoặc URLs)
+    return displayImage; // Trả về danh sách URL ảnh
   }
 
 /*
@@ -150,7 +148,7 @@ class PostingModel {
 */
   getFirstImageFromFirestore() async {
     if (displayImage!.isNotEmpty) {
-      return displayImage!.first; // Nếu đã có ảnh, trả về ảnh đầu tiên
+      return displayImage!.first; // Trả về URL ảnh đầu tiên nếu đã có ảnh
     }
 
     // Lấy thông tin bài đăng từ Firestore
@@ -166,12 +164,9 @@ class PostingModel {
       if (images.isNotEmpty) {
         String firstImage = images[0]; // Lấy ảnh đầu tiên trong danh sách
 
-        // Giải mã chuỗi Base64 của ảnh
         if (firstImage.isNotEmpty) {
-          Uint8List bytes =
-              base64Decode(firstImage); // Giải mã Base64 thành bytes
-          displayImage!.add(MemoryImage(bytes)); // Thêm ảnh vào danh sách
-          return displayImage!.first; // Trả về ảnh đầu tiên
+          displayImage!.add(firstImage); // Thêm URL ảnh đầu tiên vào danh sách
+          return displayImage!.first; // Trả về URL ảnh đầu tiên
         }
       }
     }
@@ -204,7 +199,7 @@ class PostingModel {
 
   getHostFromFirestore() async {
     await host!.getContactInfoFromFirestore();
-    await host!.getImageFromStorage();
+    // await host!.getImageFromStorage();
   }
 
   int getGuestsNumber() {

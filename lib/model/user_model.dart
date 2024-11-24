@@ -31,7 +31,7 @@ class UserModel extends ContactModel {
     String id = "",
     String firstName = "",
     String lastName = "",
-    MemoryImage? displayImage,
+   // MemoryImage? displayImage,
     this.linkImageUser = "",
     this.email = "",
     this.bio = "",
@@ -41,7 +41,9 @@ class UserModel extends ContactModel {
             id: id,
             firstName: firstName,
             lastName: lastName,
-            displayImage: displayImage) {
+           // displayImage: displayImage
+           //
+           ) {
     isHost = false;
     isCurrentlyHosting = false;
     bookings = [];
@@ -127,7 +129,7 @@ class UserModel extends ContactModel {
       });
 
       // Cập nhật ảnh đại diện trong UserModel
-      displayImage = newImage;
+     // displayImage = newImage;
     } catch (e) {
       print("Error uploading image: $e");
       throw e;
@@ -263,7 +265,7 @@ class UserModel extends ContactModel {
       id: id,
       firstName: firstName,
       lastName: lastName,
-      displayImage: displayImage,
+     // displayImage: displayImage,
     );
   }
 

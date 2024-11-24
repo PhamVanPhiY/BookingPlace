@@ -33,24 +33,23 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
   TextEditingController _countryTextEditingController = TextEditingController();
   TextEditingController _amenitiesTextEditingController =
       TextEditingController();
+  TextEditingController _imageUrlController =
+      TextEditingController(); // Controller for image URL
 
   final List<String> residenceTypes = [
-    'Detatched House',
-    ' Villa',
+    'Detached House',
+    'Villa',
     'Apartment',
     'Flat',
-    'Town house',
+    'Townhouse',
     'Studio'
   ];
-
   String residenceTypeSelected = "";
-
   Map<String, int>? _beds;
   Map<String, int>? _bathrooms;
+  List<String>? _imageUrls = []; // List to hold image URLs
 
-  List<ImageProvider> _imageList = [];
-
-  _selectImageFromGallery(int index) async {
+  /* _selectImageFromGallery(int index) async {
     var imageFilePickedFromGallery =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -65,6 +64,16 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
       }
       setState(() {});
     }
+  }*/
+
+  void _addImageUrl() {
+    String imageUrl = _imageUrlController.text.trim();
+    if (imageUrl.isNotEmpty) {
+      setState(() {
+        _imageUrls?.add(imageUrl); // Add URL to the list
+        _imageUrlController.clear(); // Clear the input field after adding
+      });
+    }
   }
 
   initializeValues() {
@@ -75,16 +84,9 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
       _addressTextEditingController = TextEditingController(text: "");
       _cityTextEditingController = TextEditingController(text: "");
       _countryTextEditingController = TextEditingController(text: "");
-      _addressTextEditingController = TextEditingController(text: "");
-
       residenceTypeSelected = residenceTypes.first;
-
       _beds = {'small': 0, 'medium': 0, 'large': 0};
-      _bathrooms = {
-        'full': 0,
-        'half': 0,
-      };
-      _imageList = [];
+      _bathrooms = {'full': 0, 'half': 0};
     } else {
       _nameTextEditingController =
           TextEditingController(text: widget.posting!.name);
@@ -102,8 +104,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
           TextEditingController(text: widget.posting!.getAmenitiesString());
       _beds = widget.posting!.beds;
       _bathrooms = widget.posting!.bathrooms;
-
-      _imageList = widget.posting!.displayImage;
+      _imageUrls = widget.posting!.displayImage;
       residenceTypeSelected = widget.posting!.type!;
     }
   }
@@ -145,7 +146,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
               if (residenceTypeSelected == "") {
                 return;
               }
-              if (_imageList!.isEmpty) {
+              if (_imageUrls!.isEmpty) {
                 return;
               }
 
@@ -161,11 +162,11 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
               postingModel.type = residenceTypeSelected;
               postingModel.beds = _beds;
               postingModel.bathrooms = _bathrooms;
-              postingModel.displayImage = _imageList;
-
+              postingModel.displayImage = _imageUrls;
+              postingModel.imageNames = _imageUrls;
               postingModel.host =
                   AppConstants.currentUser.createUserFromContact();
-              postingModel.setImageNames();
+              //postingModel.setImageNames();
 
               //if this is new a post or old post
               if (widget.posting == null) {
@@ -182,6 +183,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                 postingModel.bookings = widget.posting!.bookings;
                 postingModel.reviews = widget.posting!.reviews;
                 postingModel.id = widget.posting!.id;
+                postingModel.imageNames = _imageUrls;
 
                 for (int i = 0;
                     i < AppConstants.currentUser.myPostings!.length;
@@ -486,6 +488,44 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                         ),
                       ),
                       Padding(
+                        padding: const EdgeInsets.only(top: 21.0),
+                        child: TextFormField(
+                          controller: _imageUrlController,
+                          decoration:
+                              const InputDecoration(labelText: "Image URL"),
+                          keyboardType: TextInputType.url,
+                        ),
+                      ),
+
+                      // Button to add the URL to the list
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: ElevatedButton(
+                          onPressed: _addImageUrl,
+                          child: const Text("Add Image URL"),
+                        ),
+                      ),
+
+                      // Display added image URLs as images
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _imageUrls!.map((url) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(url),
+                                  Image.network(url), // Display image from URL
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      /*Padding(
                         padding: const EdgeInsets.only(top: 20.0, bottom: 25.0),
                         child: GridView.builder(
                           shrinkWrap: true,
@@ -497,7 +537,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                                   crossAxisSpacing: 25,
                                   childAspectRatio: 3 / 2),
                           itemBuilder: (context, index) {
-                            if (index == _imageList!.length) {
+                            if (index == _ima!.length) {
                               return IconButton(
                                 icon: const Icon(Icons.add),
                                 onPressed: () {
@@ -514,7 +554,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
                             );
                           },
                         ),
-                      )
+                      )*/
                     ],
                   ),
                 )

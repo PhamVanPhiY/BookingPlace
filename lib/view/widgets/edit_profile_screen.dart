@@ -28,8 +28,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     bioController.text = widget.user.bio ?? '';
     cityController.text = widget.user.city ?? '';
     countryController.text = widget.user.country ?? '';
-    _newProfileImage = widget.user.displayImage ??
-        MemoryImage(Uint8List(0)); // Khởi tạo với ảnh mặc định
+    //_newProfileImage = widget.user.displayImage ??
+    MemoryImage(Uint8List(0)); // Khởi tạo với ảnh mặc định
   }
 
   @override
@@ -137,10 +137,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     await widget.user.saveUserToFirestore();
 
                     // Kiểm tra nếu ảnh đã thay đổi
-                    if (_newProfileImage != widget.user.displayImage) {
+                    /*if (_newProfileImage != widget.user.displayImage) {
                       // Cập nhật ảnh nếu có thay đổi
                       await widget.user.updateProfileImage(_newProfileImage);
-                    }
+                    }*/
 
                     // Thông báo cập nhật thành công
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

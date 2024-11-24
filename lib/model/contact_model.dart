@@ -8,14 +8,14 @@ class ContactModel {
   String? firstName;
   String? lastName;
   String? fullName;
-  MemoryImage? displayImage;
+  //MemoryImage? displayImage;
   String? linkImageUser;
 
   ContactModel({
     this.id = "",
     this.firstName = "",
     this.lastName = "",
-    this.displayImage,
+    //this.displayImage,
     this.linkImageUser,
   });
 
@@ -63,13 +63,13 @@ class ContactModel {
   }
 
   // Lấy ảnh người dùng từ Firebase Storage (Bất đồng bộ)
-  Future<MemoryImage?> getImageFromStorage() async {
+  /*Future<MemoryImage?> getImageFromStorage() async {
     if (displayImage != null) {
       return displayImage!;
     }
 
     try {
-      // Lấy dữ liệu ảnh từ Firebase Storage
+      // Lấy dữ liệu ảnh từ Firebase Stora
       final imageData = await FirebaseStorage.instance
           .ref()
           .child("userImages")
@@ -88,4 +88,5 @@ class ContactModel {
       return null; // Trả về null nếu có lỗi khi lấy ảnh
     }
   }
+  */
 }

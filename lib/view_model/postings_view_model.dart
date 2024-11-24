@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class PostingsViewModel {
   addListingInfoToFirestore() async {
-    postingModel.setImageNames();
+    //postingModel.setImageNames();
 
     // Chuyển đổi ảnh sang chuỗi Base64
 
@@ -20,7 +20,7 @@ class PostingsViewModel {
       "city": postingModel.city,
       "country": postingModel.country,
       "hostID": AppConstants.currentUser.id,
-      "imageNames": postingModel.imageNames,
+      "images": postingModel.imageNames,
       //  "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
       "name": postingModel.name,
       "price": postingModel.price,
@@ -36,7 +36,7 @@ class PostingsViewModel {
   }
 
   updateListingInfoToFirestore() async {
-    postingModel.setImageNames();
+    //postingModel.setImageNames();
 
     // Chuyển đổi ảnh sang chuỗi Base64
 
@@ -63,11 +63,11 @@ class PostingsViewModel {
         .update(dataMap);
   }
 
-  loadImagesFromFirestore(List<String> imageBase64List) {
+  /*loadImagesFromFirestore(List<String> imageBase64List) {
     // Chuyển từ Base64 về MemoryImage để hiển thị trong giao diện
     postingModel.displayImage = imageBase64List
         .map((base64String) =>
             MemoryImage(base64Decode(base64String))) // Decode Base64
         .toList();
-  }
+  }*/
 }

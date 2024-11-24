@@ -24,7 +24,6 @@ class _MessageListTitleUiState extends State<MessageListTitleUi> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.only(left: 11),
@@ -72,11 +71,14 @@ class _MessageListTitleUiState extends State<MessageListTitleUi> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left:8.0),
+              padding: const EdgeInsets.only(left: 8.0),
               child: GestureDetector(
                 onTap: () {},
                 child: CircleAvatar(
-                  backgroundImage: AppConstants.currentUser.displayImage,
+                  backgroundImage: AppConstants.currentUser.linkImageUser !=
+                          null
+                      ? NetworkImage(AppConstants.currentUser.linkImageUser!)
+                      : null,
                   radius: MediaQuery.of(context).size.width / 20,
                 ),
               ),
@@ -96,7 +98,9 @@ class _MessageListTitleUiState extends State<MessageListTitleUi> {
             GestureDetector(
               onTap: () {},
               child: CircleAvatar(
-                backgroundImage: widget.message!.sender!.displayImage,
+                backgroundImage: widget.message!.sender!.linkImageUser != null
+                    ? NetworkImage(widget.message!.sender!.linkImageUser!)
+                    : AssetImage('assets/images/default_image.png'),
                 radius: MediaQuery.of(context).size.width / 20,
               ),
             ),

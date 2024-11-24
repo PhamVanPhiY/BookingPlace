@@ -80,12 +80,15 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Images Section
+            // Images Section
             AspectRatio(
               aspectRatio: 3 / 2,
               child: PageView.builder(
                 itemCount: posting!.displayImage!.length,
                 itemBuilder: (context, index) {
-                  ImageProvider currentImage = posting!.displayImage![index];
+                  // Chuyển đổi mỗi String thành NetworkImage (hoặc FileImage nếu cần)
+                  ImageProvider currentImage =
+                      NetworkImage(posting!.displayImage![index]);
                   return Image(
                     image: currentImage,
                     fit: BoxFit.cover,
@@ -176,7 +179,10 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                             onTap: () {},
                             child: CircleAvatar(
                               radius: 30,
-                              backgroundImage: posting!.host!.displayImage,
+                              backgroundImage: posting!.host!.linkImageUser !=
+                                      null
+                                  ? NetworkImage(posting!.host!.linkImageUser!)
+                                  : null, // hoặc một hình ảnh mặc định nếu cần
                             ),
                           ),
                           const SizedBox(height: 10),

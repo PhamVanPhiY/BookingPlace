@@ -445,7 +445,7 @@ class UserViewModel {
   }
 
   // Lấy hình ảnh của người dùng từ Firebase Storage
-  getImageFromStorage(userId) async {
+  /*getImageFromStorage(userId) async {
     if (AppConstants.currentUser.displayImage != null) {
       return AppConstants.currentUser.displayImage;
     }
@@ -459,7 +459,7 @@ class UserViewModel {
 
     AppConstants.currentUser.displayImage = MemoryImage(imageDataInBytes!);
     return AppConstants.currentUser.displayImage;
-  }
+  }*/
 
   // Trở thành Host
   becomeHost(String userID) async {

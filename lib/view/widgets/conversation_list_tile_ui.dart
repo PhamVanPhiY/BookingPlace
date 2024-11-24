@@ -19,18 +19,18 @@ class ConversationListTileUI extends StatefulWidget {
 class _ConversationListTileUIState extends State<ConversationListTileUI> {
   ConversationModel? conversation;
 
-  getImageOfOtherContact() {
+ /*getImageOfOtherContact() {
     conversation!.otherContact!.getImageFromStorage().whenComplete(() {
       setState(() {});
     });
-  }
+  }*/
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     conversation = widget.conversation;
-    conversation!.otherContact!.getImageFromStorage();
+   // conversation!.otherContact!.getImageFromStorage();
   }
 
   @override
@@ -39,7 +39,7 @@ class _ConversationListTileUIState extends State<ConversationListTileUI> {
       leading: GestureDetector(
         onTap: () {},
         child: CircleAvatar(
-          backgroundImage: conversation!.otherContact!.displayImage,
+         // backgroundImage: conversation!.otherContact!.displayImage,
           radius: MediaQuery
               .of(context)
               .size

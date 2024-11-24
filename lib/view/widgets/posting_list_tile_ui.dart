@@ -34,7 +34,7 @@ class _PostingListTileUiState extends State<PostingListTileUi> {
         trailing: AspectRatio(
           aspectRatio: 3 / 2,
           child: Image(
-            image: posting!.displayImage!.first,
+            image: NetworkImage(posting!.imageNames![0]),
             fit: BoxFit.fitWidth,
           ),
         ),

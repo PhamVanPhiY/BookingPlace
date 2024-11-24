@@ -36,7 +36,7 @@ class ReviewModel {
   Future<MemoryImage?> getReviewerImage() async {
     if (contact != null) {
       // Đảm bảo lấy ảnh của người đánh giá
-      return await contact!.getImageFromStorage();
+      //return await contact!.getImageFromStorage();
     }
     return null;
   }
