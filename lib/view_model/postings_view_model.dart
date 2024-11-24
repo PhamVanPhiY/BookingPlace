@@ -10,9 +10,6 @@ class PostingsViewModel {
     postingModel.setImageNames();
 
     // Chuyển đổi ảnh sang chuỗi Base64
-    List<String> imageBase64List = postingModel.displayImage!
-        .map((image) => base64Encode(image.bytes))
-        .toList();
 
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
@@ -24,7 +21,7 @@ class PostingsViewModel {
       "country": postingModel.country,
       "hostID": AppConstants.currentUser.id,
       "imageNames": postingModel.imageNames,
-      "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
+      //  "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
       "name": postingModel.name,
       "price": postingModel.price,
       "rating": 3.5,
@@ -42,9 +39,6 @@ class PostingsViewModel {
     postingModel.setImageNames();
 
     // Chuyển đổi ảnh sang chuỗi Base64
-    List<String> imageBase64List = postingModel.displayImage!
-        .map((image) => base64Encode(image.bytes))
-        .toList();
 
     Map<String, dynamic> dataMap = {
       "address": postingModel.address,
@@ -56,7 +50,7 @@ class PostingsViewModel {
       "country": postingModel.country,
       "hostID": AppConstants.currentUser.id,
       //"imageNames": postingModel.imageNames,
-      "images": imageBase64List, // Lưu danh sách ảnh dạng Base64
+      //"images": imageBase64List, // Lưu danh sách ảnh dạng Base64
       "name": postingModel.name,
       "price": postingModel.price,
       "rating": 3.5,

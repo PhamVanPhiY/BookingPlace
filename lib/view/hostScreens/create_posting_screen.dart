@@ -48,7 +48,7 @@ class _CreatePostingScreenState extends State<CreatePostingScreen> {
   Map<String, int>? _beds;
   Map<String, int>? _bathrooms;
 
-  List<MemoryImage>? _imageList;
+  List<ImageProvider> _imageList = [];
 
   _selectImageFromGallery(int index) async {
     var imageFilePickedFromGallery =

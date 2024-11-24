@@ -24,7 +24,8 @@ class PostingModel {
 
   ContactModel? host;
   List<String>? imageNames;
-  List<MemoryImage>? displayImage;
+  List<ImageProvider> displayImage = [];
+
   List<String>? amenities;
 
   Map<String, int>? beds;
@@ -77,7 +78,7 @@ class PostingModel {
 
     String hostID = snapshot['hostID'] ?? "";
     host = ContactModel(id: hostID);
-    imageNames = List<String>.from(snapshot['imageNames']) ?? [];
+    imageNames = List<String>.from(snapshot['images']) ?? [];
     name = snapshot['name'] ?? "";
     price = snapshot['price'].toDouble() ?? 0.0;
     rating = snapshot['rating'].toDouble() ?? 2.5;
@@ -107,7 +108,7 @@ class PostingModel {
     return displayImage;
   }*/
   getAllImagesFromFirestore() async {
-    displayImage = []; // Khởi tạo danh sách ảnh
+    displayImage = []; // Khởi tạo danh sách ảnh (hoặc danh sách lưu URL)
 
     // Lấy thông tin bài đăng từ Firestore
     DocumentSnapshot postingSnapshot = await FirebaseFirestore.instance
@@ -116,19 +117,20 @@ class PostingModel {
         .get();
 
     if (postingSnapshot.exists) {
-      // Lấy danh sách ảnh từ trường "images" (dự đoán là List<dynamic>)
-      List<dynamic> images = postingSnapshot['images'] ?? [];
+      // Lấy danh sách ảnh từ trường "images" (dự đoán là List<String>)
+      List<dynamic> images =
+          postingSnapshot['images'] ?? []; // Lấy danh sách ảnh
 
       for (var image in images) {
-        // Giải mã chuỗi Base64 thành Uint8List nếu chuỗi không rỗng
+        // Nếu ảnh là URL (chuỗi không rỗng), thêm trực tiếp vào danh sách
         if (image is String && image.isNotEmpty) {
-          Uint8List bytes = base64Decode(image); // Giải mã Base64 thành bytes
-          displayImage!.add(MemoryImage(bytes)); // Thêm ảnh vào danh sách
+          displayImage!.add(
+              NetworkImage(image)); // Sử dụng NetworkImage để tải ảnh từ URL
         }
       }
     }
 
-    return displayImage; // Trả về danh sách ảnh đã giải mã
+    return displayImage; // Trả về danh sách ảnh (hoặc URLs)
   }
 
 /*

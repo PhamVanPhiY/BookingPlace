@@ -98,7 +98,7 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
                 // Ảnh của bài đăng
                 AspectRatio(
                   aspectRatio: 3 / 2,
-                  child: (posting!.displayImage!.isEmpty)
+                  child: (posting!.imageNames!.isEmpty)
                       ? Image.asset(
                           'assets/images/default_image.png') // Ảnh mặc định nếu không có ảnh
                       : ClipRRect(
@@ -106,7 +106,7 @@ class _PostingGridTileUiState extends State<PostingGridTileUi> {
                           child: Container(
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: posting!.displayImage!.first,
+                                image: NetworkImage(posting!.imageNames![0]),
                                 fit: BoxFit.cover,
                               ),
                             ),

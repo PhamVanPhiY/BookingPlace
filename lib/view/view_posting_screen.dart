@@ -85,7 +85,7 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
               child: PageView.builder(
                 itemCount: posting!.displayImage!.length,
                 itemBuilder: (context, index) {
-                  MemoryImage currentImage = posting!.displayImage![index];
+                  ImageProvider currentImage = posting!.displayImage![index];
                   return Image(
                     image: currentImage,
                     fit: BoxFit.cover,

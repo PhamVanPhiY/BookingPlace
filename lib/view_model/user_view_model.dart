@@ -113,6 +113,8 @@ class UserViewModel {
         'country': country,
         'bio': bio,
         'isHost': false,
+        'linkImageUser':
+            "https://www.pngitem.com/pimgs/m/22-220721_circled-user-male-type-user-colorful-icon-png.png",
         'createdAt': FieldValue.serverTimestamp(),
       };
 
