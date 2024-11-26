@@ -23,6 +23,9 @@ class _CalenderUiState extends State<CalenderUi> {
   int? _currentMonthInt;
   int? _currentYearInt;
 
+  // Thêm biến cho ngày hiện tại
+  DateTime currentDate = DateTime.now();
+  DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
   _setUpMonthTiles() {
     _monthTiles = [];
     int daysInMonth = AppConstants.dayInMonths![_currentMonthInt]!;
@@ -42,18 +45,30 @@ class _CalenderUiState extends State<CalenderUi> {
   }
 
   _selectDate(DateTime date) {
+    // In thông tin ra để debug
+    print(date);
+    print(currentDate);
+
+    // Kiểm tra nếu ngày trong tương lai hoặc hôm nay
+    if (date.isBefore(currentDate)) {
+      print("Cannot select past date:${date} ");
+    } else {
+      print("Selected valid date: ");
+    }
     if (_selectedDates.contains(date)) {
       _selectedDates.remove(date);
     } else {
       _selectedDates.add(date);
     }
+
+    // Gọi hàm selectDate từ widget cha (nếu có)
     widget.selectDate!(date);
-    setState(() {});
+
+    setState(() {}); // Cập nhật UI
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _currentMonthInt = (DateTime.now().month + widget.monthIndex!) % 12;
 
@@ -94,21 +109,31 @@ class _CalenderUiState extends State<CalenderUi> {
                 );
               }
 
-              if (widget.bookedDates!.contains((monthTile.dateTime))) {
-                return MaterialButton(
-                  onPressed: null,
-                  color: Colors.yellow,
-                  disabledColor: Colors.yellow,
-                  child: monthTile,
-                );
-              }
+              // Kiểm tra ngày hiện tại và vô hiệu hóa các ngày trong quá khứ
+              // Kiểm tra ngày hôm nay (currentDate)
+              bool isToday = monthTile.dateTime!.year == currentDate.year &&
+                  monthTile.dateTime!.month == currentDate.month &&
+                  monthTile.dateTime!.day == currentDate.day;
+
+              // Kiểm tra xem ngày có phải là quá khứ không
+              bool isPastDate = monthTile.dateTime!.isBefore(yesterday);
+              // if (widget.bookedDates!.contains((monthTile.dateTime))) {
+              //   return MaterialButton(
+              //     onPressed: null,
+              //     color: Colors.yellow,
+              //     disabledColor: Colors.yellow,
+              //     child: monthTile,
+              //   );
+              // }
               return MaterialButton(
-                onPressed: () {
-                  _selectDate(monthTile.dateTime!);
-                },
-                color: (this._selectedDates.contains(monthTile.dateTime))
-                    ? Colors.blue
-                    : Colors.white,
+                onPressed: isPastDate
+                    ? null
+                    : () {
+                        _selectDate(monthTile.dateTime!);
+                      },
+                color: (_selectedDates.contains(monthTile.dateTime))
+                    ? Colors.blue // Ngày đã chọn được tô màu xanh
+                    : Colors.white, // Ngày khác có màu trắng
                 child: monthTile,
               );
             }),
