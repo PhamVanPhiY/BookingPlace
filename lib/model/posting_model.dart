@@ -131,6 +131,29 @@ class PostingModel {
     return displayImage; // Trả về danh sách URL ảnh
   }
 
+  int getTotalBeds() {
+    int totalBeds = 0;
+
+    // Iterate through the beds map and sum the values of each bed type
+    beds?.forEach((key, value) {
+      totalBeds += value;
+    });
+
+    return totalBeds;
+  }
+
+  // Calculate total bathrooms based on the number of each bathroom type
+  int getTotalBathrooms() {
+    int totalBathrooms = 0;
+
+    // Iterate through the bathrooms map and sum the values of each bathroom type
+    bathrooms?.forEach((key, value) {
+      totalBathrooms += value;
+    });
+
+    return totalBathrooms;
+  }
+
 /*
   getFirstImageFromStorage() async {
     if (displayImage!.isNotEmpty) {
