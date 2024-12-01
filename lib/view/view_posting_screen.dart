@@ -1,4 +1,5 @@
 import 'package:booking_place/model/app_constants.dart';
+import 'package:booking_place/model/contact_model.dart';
 import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/model/review_model.dart';
 import 'package:booking_place/view/guestSreens/book_listing_screen.dart';
@@ -463,7 +464,7 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           // Thay đổi để lấy ảnh của người đánh giá
-                                          FutureBuilder<MemoryImage?>(
+                                          FutureBuilder<String?>(
                                             future: review
                                                 .getReviewerImage(), // Lấy ảnh của người đánh giá
                                             builder: (context, snapshot) {
@@ -480,21 +481,24 @@ class _ViewPostingScreenState extends State<ViewPostingScreen> {
                                                   backgroundColor: Colors
                                                       .grey, // Màu nền nếu có lỗi
                                                 );
-                                              } else if (snapshot.hasData) {
+                                              } else if (snapshot.hasData &&
+                                                  snapshot.data != null) {
                                                 return CircleAvatar(
                                                   radius: 25,
-                                                  backgroundImage: snapshot
-                                                      .data, // Hiển thị ảnh người đánh giá
+                                                  backgroundImage: NetworkImage(
+                                                      snapshot
+                                                          .data!), // Hiển thị ảnh người đánh giá
                                                 );
                                               } else {
                                                 return const CircleAvatar(
                                                   radius: 25,
                                                   backgroundColor: Colors
-                                                      .grey, // Màu nền nếu không có ảnh
+                                                      .grey, // Màu nền khi không có dữ liệu
                                                 );
                                               }
                                             },
                                           ),
+
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(

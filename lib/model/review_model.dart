@@ -33,11 +33,14 @@ class ReviewModel {
   }
 
   // Hàm lấy ảnh của người đánh giá từ Firebase Storage
-  Future<MemoryImage?> getReviewerImage() async {
+  Future<String?> getReviewerImage() async {
     if (contact != null) {
-      // Đảm bảo lấy ảnh của người đánh giá
-      //return await contact!.getImageFromStorage();
+      ContactModel updatedContact =
+          await contact!.getContactInfoFromFirestore();
+      print("linkImageUser: ${updatedContact.linkImageUser}");
+      return updatedContact.linkImageUser;
     }
+    print("getReviewerImage: contact là null");
     return null;
   }
 }

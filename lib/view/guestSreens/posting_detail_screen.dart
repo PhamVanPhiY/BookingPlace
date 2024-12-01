@@ -27,7 +27,7 @@ class _PostingDetailScreenState extends State<PostingDetailScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,29 +46,24 @@ class _PostingDetailScreenState extends State<PostingDetailScreen> {
                 } else {
                   // Kiểm tra và ép kiểu giá trị trả về
                   var image = snapshot.data;
-                  if (image is MemoryImage) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 8)
-                        ],
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black26, blurRadius: 8)
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image(
+                        image: NetworkImage(image),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 250,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image(
-                          image: image,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 250,
-                        ),
-                      ),
-                    );
-                  } else {
-                    // Xử lý khi dữ liệu không phải kiểu MemoryImage
-                    return Icon(Icons.image_not_supported, size: 50);
-                  }
+                    ),
+                  );
                 }
               },
             ),

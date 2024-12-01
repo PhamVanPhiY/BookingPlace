@@ -31,19 +31,19 @@ class UserModel extends ContactModel {
     String id = "",
     String firstName = "",
     String lastName = "",
-   // MemoryImage? displayImage,
+    // MemoryImage? displayImage,
     this.linkImageUser = "",
     this.email = "",
     this.bio = "",
     this.city = "",
     this.country = "",
   }) : super(
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-           // displayImage: displayImage
-           //
-           ) {
+          id: id,
+          firstName: firstName,
+          lastName: lastName,
+          // displayImage: displayImage
+          //
+        ) {
     isHost = false;
     isCurrentlyHosting = false;
     bookings = [];
@@ -129,7 +129,7 @@ class UserModel extends ContactModel {
       });
 
       // Cập nhật ảnh đại diện trong UserModel
-     // displayImage = newImage;
+      // displayImage = newImage;
     } catch (e) {
       print("Error uploading image: $e");
       throw e;
@@ -194,12 +194,17 @@ class UserModel extends ContactModel {
   Future<void> addBookingToFirestore(BookingModel booking,
       double totalPriceForAllNigths, String hostID) async {
     String earningsOld = "";
+
+    print("Starting to fetch earnings for hostID: $hostID");
     await FirebaseFirestore.instance
         .collection('users')
         .doc(hostID)
         .get()
         .then((dataSnap) {
       earningsOld = dataSnap["earnings"].toString();
+      print("Fetched earningsOld: $earningsOld");
+    }).catchError((error) {
+      print("Error fetching earnings: $error");
     });
 
     Map<String, dynamic> data = {
@@ -207,14 +212,38 @@ class UserModel extends ContactModel {
       'postingID': booking.posting!.id!,
     };
 
-    await FirebaseFirestore.instance
-        .doc('users/${id}/bookings/${booking.id}')
-        .set(data);
-    await FirebaseFirestore.instance.collection("users").doc(hostID).update({
-      "earnings": totalPriceForAllNigths + double.parse(earningsOld),
-    });
-    bookings!.add(booking);
-    await addBookingConversation(booking);
+    print("Data to be added to bookings: $data");
+
+    try {
+      String? id = AppConstants.currentUser.id; // Thay thế bằng logic lấy `id`
+      print(
+          "Adding booking to Firestore at path: users/$id/bookings/${booking.id}");
+      await FirebaseFirestore.instance
+          .doc('users/${id}/bookings/${booking.id}')
+          .set(data);
+      print("Booking added successfully.");
+    } catch (error) {
+      print("Error adding booking: $error");
+    }
+
+    try {
+      print("Updating earnings for hostID: $hostID");
+      await FirebaseFirestore.instance.collection("users").doc(hostID).update({
+        "earnings": totalPriceForAllNigths + double.parse(earningsOld),
+      });
+      print("Earnings updated successfully.");
+    } catch (error) {
+      print("Error updating earnings: $error");
+    }
+
+    try {
+      bookings!.add(booking);
+      print("Booking added to local list.");
+      await addBookingConversation(booking);
+      print("Booking conversation added successfully.");
+    } catch (error) {
+      print("Error in addBookingConversation or local list: $error");
+    }
   }
 
   // Lấy tất cả các ngày đã đặt trong các bài đăng của người dùng
@@ -265,7 +294,7 @@ class UserModel extends ContactModel {
       id: id,
       firstName: firstName,
       lastName: lastName,
-     // displayImage: displayImage,
+      // displayImage: displayImage,
     );
   }
 

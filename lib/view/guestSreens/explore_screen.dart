@@ -1,6 +1,7 @@
 import 'package:booking_place/model/posting_model.dart';
 import 'package:booking_place/view/view_posting_screen.dart';
 import 'package:booking_place/view/widgets/posting_grid_tile_ui.dart';
+import 'package:booking_place/view/widgets/card_grid_UI.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -241,7 +242,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ));
                         },
                         enableFeedback: true,
-                        child: PostingGridTileUi(posting: cPosting),
+                        child: CardGridUI(posting: cPosting),
+                        //     HotelCard(
+                        //   imageUrl:
+                        //       "https://path/to/your/image.png", // URL ảnh của khách sạn
+                        //   hotelName: "Intercontinental Da Nang",
+                        //   location: "Viet Nam",
+                        //   rating: 5,
+                        //   price: 450.0,
+                        // ),
                       );
                     },
                   );

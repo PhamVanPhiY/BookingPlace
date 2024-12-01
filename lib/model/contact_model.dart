@@ -61,32 +61,4 @@ class ContactModel {
       return this; // Nếu có lỗi, trả về đối tượng mặc định
     }
   }
-
-  // Lấy ảnh người dùng từ Firebase Storage (Bất đồng bộ)
-  /*Future<MemoryImage?> getImageFromStorage() async {
-    if (displayImage != null) {
-      return displayImage!;
-    }
-
-    try {
-      // Lấy dữ liệu ảnh từ Firebase Stora
-      final imageData = await FirebaseStorage.instance
-          .ref()
-          .child("userImages")
-          .child(id!)
-          .child("$id.png")
-          .getData(1024 * 1024); // Lấy tối đa 1MB dữ liệu
-
-      if (imageData != null) {
-        displayImage = MemoryImage(imageData);
-        return displayImage;
-      } else {
-        return null; // Trả về null nếu không có dữ liệu ảnh
-      }
-    } catch (e) {
-      print("Error getting image from storage: $e");
-      return null; // Trả về null nếu có lỗi khi lấy ảnh
-    }
-  }
-  */
 }

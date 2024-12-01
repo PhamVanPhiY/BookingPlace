@@ -70,16 +70,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-                  Padding(
+                  Padding( 
                     padding: const EdgeInsets.only(top: 26.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await userViewModel.login(
-                            _emailTextEditingController.text.trim(),
-                            _passwordTextEditingController.text.trim(),
-                          );
-                        }
+                        // if (_formKey.currentState!.validate()) {
+                        await userViewModel.login(
+                            // _emailTextEditingController.text.trim(),
+                            // _passwordTextEditingController.text.trim(),
+                            "1",
+                            "1");
+                        // }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,

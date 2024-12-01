@@ -39,47 +39,93 @@ class _TripsScreenState extends State<TripsScreen> {
                 itemCount: myPostings.length,
                 itemBuilder: (context, index) {
                   PostingModel posting = myPostings[index];
-                  return Card(
-                    margin: EdgeInsets.all(10),
-                    child: ListTile(
-                      leading: FutureBuilder<dynamic>(
-                        future: posting
-                            .getFirstImageFromFirestore(), // Hàm này vẫn giữ nguyên
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Icon(Icons.error);
-                          } else if (!snapshot.hasData ||
-                              snapshot.data == null) {
-                            return Icon(Icons
-                                .image_not_supported); // Hiển thị khi không có dữ liệu
-                          } else {
-                            // Kiểm tra và ép kiểu giá trị trả về
-                            var image = snapshot.data;
-                            if (image is MemoryImage) {
-                              return CircleAvatar(
-                                backgroundImage: image,
-                              );
-                            } else {
-                              // Xử lý khi dữ liệu không phải kiểu MemoryImage
+                  print(
+                      'Building item at index: $index, posting: ${posting.name}');
+
+                  return Dismissible(
+                    key: Key(posting.id!), // Provide a default value when null
+
+                    direction:
+                        DismissDirection.endToStart, // Vuốt từ phải sang trái
+                    onDismissed: (direction) {
+                      // Log khi vuốt qua một mục
+                      print('Item at index $index dismissed: ${posting.name}');
+
+                      // Thực hiện xoá hoặc hành động khác
+                      // Xử lý xoá item (hoặc cập nhật dữ liệu của bạn ở đây)
+                      setState(() {
+                        myPostings.removeAt(index);
+                      });
+
+                      // Hiển thị snack bar thông báo
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Item ${posting.name} removed")),
+                      );
+                    },
+                    background: Container(
+                      color: Colors.red, // Màu nền khi vuốt
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20.0),
+                        child: Icon(Icons.delete, color: Colors.white),
+                      ),
+                    ),
+                    child: Card(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                      child: ListTile(
+                        leading: FutureBuilder<dynamic>(
+                          future: posting.getFirstImageFromFirestore(),
+                          builder: (context, snapshot) {
+                            print(
+                                'Snapshot for index $index: connectionState=${snapshot.connectionState}, hasError=${snapshot.hasError}, hasData=${snapshot.hasData}');
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              print('Image for index $index is loading...');
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              print(
+                                  'Error loading image for index $index: ${snapshot.error}');
+                              return Icon(Icons.error);
+                            } else if (!snapshot.hasData ||
+                                snapshot.data == null) {
+                              print('No image data for index $index');
                               return Icon(Icons.image_not_supported);
+                            } else {
+                              var image = snapshot.data;
+                              print('Loaded image for index $index: $image');
+
+                              return Container(
+                                width: 100, // Chiều rộng của hình vuông
+                                height: 100, // Chiều cao của hình vuông
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        image), // Dùng NetworkImage để tải hình ảnh từ URL
+                                    fit: BoxFit
+                                        .cover, // Điều chỉnh cách hình ảnh vừa với khung
+                                  ),
+                                  borderRadius: BorderRadius
+                                      .zero, // Không bo góc (hình vuông)
+                                ),
+                              );
                             }
-                          }
+                          },
+                        ),
+                        title: Text(posting.name ?? 'Unknown'),
+                        subtitle: Text(posting.getFullAddress()),
+                        onTap: () {
+                          print(
+                              'Tapped on posting at index $index: ${posting.name}');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PostingDetailScreen(posting: posting),
+                            ),
+                          );
                         },
                       ),
-                      title: Text(posting.name ?? 'Unknown'),
-                      subtitle: Text(posting.getFullAddress()),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PostingDetailScreen(posting: posting),
-                          ),
-                        );
-                      },
                     ),
                   );
                 },

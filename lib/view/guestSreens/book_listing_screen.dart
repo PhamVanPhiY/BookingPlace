@@ -62,11 +62,7 @@ class _BookListingScreenState extends State<BookListingScreen> {
     if (selectedDates.isEmpty) {
       return;
     }
-    posting!
-        .makeNewBooking(selectedDates, context, widget.hostID)
-        .whenComplete(() {
-      Get.back();
-    });
+    posting!.makeNewBooking(selectedDates, context, widget.hostID);
   }
 
   calculateAmountForOverAllStay() {

@@ -116,6 +116,7 @@ class UserViewModel {
         'linkImageUser':
             "https://www.pngitem.com/pimgs/m/22-220721_circled-user-male-type-user-colorful-icon-png.png",
         'createdAt': FieldValue.serverTimestamp(),
+        'earnings': 0,
       };
 
       // Lưu thông tin người dùng vào Firestore
@@ -242,7 +243,7 @@ class UserViewModel {
   }
 
   // Thêm hình ảnh của người dùng vào Firebase Storage
-  /*addImageToFirebaseStorage(File imageFileOfUser, currentUserID) async {
+  /*addImageToFirebaseStorage(File imageFile OfUser, currentUserID) async {
     Reference referenceStorage = FirebaseStorage.instance
         .ref()
         .child("userImages")
